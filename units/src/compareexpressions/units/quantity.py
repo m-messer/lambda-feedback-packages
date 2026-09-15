@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-from collections.abc import Mapping
 from typing import Any
 
 from compareexpressions.expression_parsing import (
@@ -17,7 +16,7 @@ from compareexpressions.slr_parsing import ExprNode, SLRParser
 
 from .data import CONVERSION_TO_BASE_SI, SI_BASE_UNITS, SI_PREFIXES, units_in
 from .errors import QuantityParseError, UnitConversionError
-from .params import QuantityParams, as_quantity_params
+from .params import QuantityParams
 from .parser import build_quantity_parser
 from .tags import QuantityTag
 
@@ -222,13 +221,12 @@ class PhysicalQuantity:
         return value, unit, expanded_unit, dimension, unit_factor
 
 
-def parse_quantity(expr: str, params: QuantityParams | Mapping[str, Any], name: str = "response") -> PhysicalQuantity:
+def parse_quantity(expr: str, params: QuantityParams, name: str = "response") -> PhysicalQuantity:
     """Read ``expr`` as a physical quantity (value and/or unit).
 
     ``name`` (e.g. ``"response"``) identifies the quantity in messages.
     Raises :class:`QuantityParseError` if ``expr`` can't be parsed.
     """
-    params = as_quantity_params(params)
     parser = build_quantity_parser(params.unit_sets, params.strictness)
     roots = parser.parse(parser.scan(expr.strip()))
     if len(roots) > 1:

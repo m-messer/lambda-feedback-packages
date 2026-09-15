@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import warnings
 from collections.abc import Mapping
 from dataclasses import dataclass
 from typing import Any, Literal, Self, get_args
@@ -21,7 +22,7 @@ class QuantityParams(ExpressionParams):
 
     strictness: Strictness = "natural"
     legacy_preprocessing: bool = False
-    """Rewrite the response the way the old ``legacy`` strictness did (natural otherwise)."""
+    """Deprecated: rewrite the response the way the old ``legacy`` strictness did (natural otherwise)."""
     unit_sets: frozenset[str] = frozenset(UNIT_SETS)
     """Names from :data:`~compareexpressions.units.data.UNIT_SETS` whose units are recognised."""
 
@@ -30,14 +31,20 @@ class QuantityParams(ExpressionParams):
         if self.strictness not in get_args(Strictness):
             raise ExpressionParsingError(f"Unknown strictness {self.strictness!r}.")
         object.__setattr__(self, "unit_sets", frozenset(self.unit_sets))
+        if self.legacy_preprocessing:
+            warnings.warn(
+                "legacy_preprocessing is deprecated; use strictness='natural' (the default) instead.",
+                DeprecationWarning,
+                stacklevel=3,
+            )
 
     @classmethod
     def from_dict(cls, params: Mapping[str, Any]) -> Self:
         """Build from evaluation-function parameters.
 
-        ``strictness: "legacy"`` means natural strictness with legacy
-        preprocessing; ``units_string`` names the unit sets (any of ``"SI"``,
-        ``"common"``, ``"imperial"`` it contains).
+        ``strictness: "legacy"`` (deprecated) means natural strictness with
+        legacy preprocessing; ``units_string`` names the unit sets (any of
+        ``"SI"``, ``"common"``, ``"imperial"`` it contains).
         """
         values = dict(params)
         if values.get("strictness") == "legacy":
@@ -47,8 +54,3 @@ class QuantityParams(ExpressionParams):
         if units_string is not None:
             values["unit_sets"] = frozenset(name for name in UNIT_SETS if name in units_string)
         return super().from_dict(values)
-
-
-def as_quantity_params(params: QuantityParams | Mapping[str, Any]) -> QuantityParams:
-    """Accept either typed parameters or an evaluation-function parameter mapping."""
-    return params if isinstance(params, QuantityParams) else QuantityParams.from_dict(params)

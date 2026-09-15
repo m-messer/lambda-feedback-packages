@@ -276,6 +276,8 @@ _EXTRA_QUANTITY_CASES = [
 
 QUANTITY_INPUTS = _TEST_SUITE_CASES + [f"10 {u}" for u in _UNIT_NAMES_AND_SYMBOLS] + _EXTRA_QUANTITY_CASES
 
+# Used by capture_v0_1.py only (the quantity.preview_latex probes were dropped from
+# check.py in 0.3.0: preview_function moved out of the units package it checks).
 QUANTITY_LATEX_INPUTS = [
     r"162 \mathrm{~N} / \mathrm{m}^{2}",
     r"\frac{F}{p \cdot \mu}",

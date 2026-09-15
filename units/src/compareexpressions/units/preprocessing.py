@@ -3,23 +3,21 @@
 from __future__ import annotations
 
 import re
-from collections.abc import Callable, Mapping
+from collections.abc import Callable
 from functools import cache
-from typing import Any
 
 from compareexpressions.expression_parsing import Preprocessed
 
 from .data import ALL_UNITS, SI_PREFIXES
-from .params import QuantityParams, as_quantity_params
+from .params import QuantityParams
 
 
-def preprocess_quantity(name: str, expr: str, params: QuantityParams | Mapping[str, Any]) -> Preprocessed:
+def preprocess_quantity(name: str, expr: str, params: QuantityParams) -> Preprocessed:
     """Normalise prefix spellings (or apply the legacy rewrites); never raises feedback.
 
     Same shape as ``expression_parsing.preprocess_expression``, so either can
     serve as a context's preprocessing step. ``name`` is unused.
     """
-    params = as_quantity_params(params)
     if params.legacy_preprocessing:
         return Preprocessed(preprocess_legacy(expr))
     return Preprocessed(transform_prefixes_to_standard(expr))

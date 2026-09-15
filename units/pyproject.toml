@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [project]
 name = "compareexpressions-units"
-version = "0.2.0"
+version = "0.3.0"
 description = "Unit system data, physical-quantity parsing and dimensional analysis extracted from compareExpressions."
 # <3.13: latex2sympy2 pins antlr4-python3-runtime 4.7.2, which imports the
 # `typing.io` module removed in Python 3.13.

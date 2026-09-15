@@ -8,6 +8,7 @@ from compareexpressions.units import (
     SI_BASE_UNITS,
     SI_DERIVED_UNITS,
     VERY_COMMON_UNITS,
+    QuantityParams,
     parse_quantity,
 )
 
@@ -487,7 +488,7 @@ class TestEvaluationFunction:
                 "elementary_functions": True,
             }
         )
-        quantity = parse_quantity(string, parameters, "quantity")
+        quantity = parse_quantity(string, QuantityParams.from_dict(parameters), "quantity")
         parsed_value = quantity.value.original_string() if quantity.value is not None else None
         parsed_unit = quantity.unit.original_string() if quantity.unit is not None else None
         parsed_value_latex = quantity.value_latex
@@ -503,8 +504,9 @@ class TestEvaluationFunction:
     def test_short_forms_strict_SI(self, long_form, short_form):
         parameters = {**default_parameters}
         parameters.update({"strict_syntax": False, "units_string": "SI", "strictness": "strict"})
-        long_quantity = parse_quantity(long_form, parameters, "quantity")
-        short_quantity = parse_quantity(short_form, parameters, "quantity")
+        params = QuantityParams.from_dict(parameters)
+        long_quantity = parse_quantity(long_form, params, "quantity")
+        short_quantity = parse_quantity(short_form, params, "quantity")
         assert long_quantity.unit.content_string() == short_quantity.unit.content_string()
 
     @pytest.mark.parametrize(
@@ -514,16 +516,18 @@ class TestEvaluationFunction:
     def test_short_forms_common_SI(self, long_form, short_form):
         parameters = {**default_parameters}
         parameters.update({"strict_syntax": False, "units_string": "common", "strictness": "strict"})
-        long_quantity = parse_quantity(long_form, parameters, "quantity")
-        short_quantity = parse_quantity(short_form, parameters, "quantity")
+        params = QuantityParams.from_dict(parameters)
+        long_quantity = parse_quantity(long_form, params, "quantity")
+        short_quantity = parse_quantity(short_form, params, "quantity")
         assert long_quantity.unit.content_string() == short_quantity.unit.content_string()
 
     @pytest.mark.parametrize("long_form,short_form", [(u.name, u.symbol) for u in IMPERIAL_UNITS])
     def test_short_forms_imperial(self, long_form, short_form):
         parameters = {**default_parameters}
         parameters.update({"strict_syntax": False, "units_string": "imperial", "strictness": "strict"})
-        long_quantity = parse_quantity(long_form, parameters, "quantity")
-        short_quantity = parse_quantity(short_form, parameters, "quantity")
+        params = QuantityParams.from_dict(parameters)
+        long_quantity = parse_quantity(long_form, params, "quantity")
+        short_quantity = parse_quantity(short_form, params, "quantity")
         assert long_quantity.unit.content_string() == short_quantity.unit.content_string()
 
     @pytest.mark.parametrize(
@@ -536,8 +540,9 @@ class TestEvaluationFunction:
     def test_short_forms_all(self, long_form, short_form):
         parameters = {**default_parameters}
         parameters.update({"strict_syntax": False, "units_string": "SI common imperial", "strictness": "strict"})
-        long_quantity = parse_quantity(long_form, parameters, "quantity")
-        short_quantity = parse_quantity(short_form, parameters, "quantity")
+        params = QuantityParams.from_dict(parameters)
+        long_quantity = parse_quantity(long_form, params, "quantity")
+        short_quantity = parse_quantity(short_form, params, "quantity")
         assert long_quantity.unit.content_string() == short_quantity.unit.content_string()
 
     @pytest.mark.parametrize(
@@ -553,7 +558,7 @@ class TestEvaluationFunction:
                 "elementary_functions": True,
             }
         )
-        quantity = parse_quantity(string, parameters, "quantity")
+        quantity = parse_quantity(string, QuantityParams.from_dict(parameters), "quantity")
         parsed_unit_latex = quantity.unit_latex
         parsed_value = quantity.value.original_string() if quantity.value is not None else None
         parsed_unit = quantity.unit.original_string() if quantity.unit is not None else None

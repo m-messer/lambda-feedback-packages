@@ -1,4 +1,4 @@
-"""Physical quantities: unit data, parsing into value and unit, dimensional analysis, preview.
+"""Physical quantities: unit data, parsing into value and unit, dimensional analysis.
 
 Typical use::
 
@@ -6,10 +6,10 @@ Typical use::
     quantity = parse_quantity("9.81 m/s^2", params)
     quantity.value, quantity.unit, quantity.dimension, quantity.standard_value
 
-or ``preview_function(response, evaluation_params)`` for a preview.
-
 Extracted from compareExpressions; unit-like text read as part of a value is
 reported as ``REVERTED_UNIT`` :class:`~compareexpressions.expression_parsing.FeedbackTag` messages.
+Previewing a response (LaTeX/SymPy rendering) is an app-layer concern and
+lives in compareExpressions, not here.
 """
 
 from .data import (
@@ -31,7 +31,6 @@ from .errors import QuantityError, QuantityParseError, UnitConversionError
 from .params import QuantityParams, Strictness
 from .parser import build_quantity_parser
 from .preprocessing import preprocess_legacy, preprocess_quantity, transform_prefixes_to_standard
-from .preview import fix_exponents, preview_function
 from .quantity import REVERTED_UNIT, PhysicalQuantity, parse_quantity
 from .tags import QuantityTag
 
@@ -57,11 +56,9 @@ __all__ = [
     "Unit",
     "UnitConversionError",
     "build_quantity_parser",
-    "fix_exponents",
     "parse_quantity",
     "preprocess_legacy",
     "preprocess_quantity",
-    "preview_function",
     "transform_prefixes_to_standard",
     "units_in",
 ]

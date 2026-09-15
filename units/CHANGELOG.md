@@ -1,5 +1,18 @@
 # Changelog: compareexpressions-units
 
+## 0.3.0 (unreleased)
+
+Further tidy-up after the 0.2.0 extraction: this package is unit conversion only now.
+
+### Breaking
+
+- `parse_quantity` and `preprocess_quantity` now take `QuantityParams` only; the `Mapping[str, Any]` (raw dict) fallback is gone, along with the `as_quantity_params` helper. Convert evaluation-function parameters explicitly at the call site with `QuantityParams.from_dict(evaluation_params)`.
+- `preview_function` and `fix_exponents` have moved out of this package entirely, to compareExpressions (`app/context/physical_quantity_preview.py`): building a LaTeX/SymPy preview string is an app-layer display concern, not unit conversion. Import them from there instead of `compareexpressions.units`.
+
+### Deprecated
+
+- `strictness="legacy"` (and constructing `QuantityParams(legacy_preprocessing=True)` directly) now emits a `DeprecationWarning`. The behaviour is unchanged — natural strictness with the old `legacy` preprocessing rewrites — but new callers should use `strictness="natural"` (the default).
+
 ## 0.2.0 (unreleased)
 
 The first release after the extraction refactor. The import path is now `compareexpressions.units` (was `units`).

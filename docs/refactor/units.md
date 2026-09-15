@@ -2,6 +2,8 @@
 
 Depends on `slr_parsing`, `expression_parsing` and `sympy`. Released as `0.2.0`; see [`units/CHANGELOG.md`](../../units/CHANGELOG.md) for the migration table and known issues.
 
+**Post-refactor cleanup (0.3.0):** `parse_quantity`/`preprocess_quantity` now require `QuantityParams` (no raw-dict fallback); `strictness="legacy"` is deprecated (still works, warns); `preview_function`/`fix_exponents` moved out to compareExpressions (`app/context/physical_quantity_preview.py`) since previewing a response is a display concern, not unit conversion. See the CHANGELOG for details.
+
 ## Modules
 
 | Module | Contents |
@@ -11,9 +13,10 @@ Depends on `slr_parsing`, `expression_parsing` and `sympy`. Released as `0.2.0`;
 | `tags.py` | `QuantityTag`: `UNIT`, `NON_UNIT`, `NUMBER`, `REJECTED_UNIT` (was `U`/`V`/`N`/`R`) |
 | `parser.py` | Unit dictionaries, tag handler, natural juxtaposition, `build_quantity_parser` (cached per unit sets and strictness) |
 | `quantity.py` | `PhysicalQuantity`, `parse_quantity`, `REVERTED_UNIT` |
-| `preprocessing.py` | `preprocess_quantity` → `Preprocessed`, `preprocess_legacy` (patterns compiled once), `transform_prefixes_to_standard` |
-| `preview.py` | `preview_function`, `fix_exponents` |
+| `preprocessing.py` | `preprocess_quantity` → `Preprocessed`, `preprocess_legacy` (patterns compiled once, deprecated), `transform_prefixes_to_standard` |
 | `errors.py` | `QuantityError` (a `ValueError`) → `QuantityParseError`, `UnitConversionError` |
+
+`preview.py` (`preview_function`, `fix_exponents`) was removed in 0.3.0 and moved to compareExpressions — see above.
 
 **Deviations from the plan:**
 - `R` became `REJECTED_UNIT`: units written next to each other in strict mode, which strict syntax doesn't accept as a unit.

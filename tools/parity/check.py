@@ -33,7 +33,6 @@ from corpus import (  # noqa: E402
     EXPRESSION_VARIANTS,
     LATEX_INPUTS,
     QUANTITY_INPUTS,
-    QUANTITY_LATEX_INPUTS,
     QUANTITY_VARIANTS,
 )
 
@@ -45,8 +44,7 @@ from compareexpressions.expression_parsing import (  # noqa: E402
     sympy_to_latex,
 )
 from compareexpressions.expression_parsing import preview_function as symbolic_preview  # noqa: E402
-from compareexpressions.units import parse_quantity  # noqa: E402
-from compareexpressions.units import preview_function as quantity_preview  # noqa: E402
+from compareexpressions.units import QuantityParams, parse_quantity  # noqa: E402
 
 ERROR = "ERROR"
 
@@ -94,7 +92,7 @@ def quantity_params(variant: str) -> dict[str, Any]:
 
 
 def quantity_parse(expr: str, variant: str) -> dict[str, Any]:
-    params = quantity_params(variant)
+    params = QuantityParams.from_dict(quantity_params(variant))
     q = parse_quantity(expr, params, "response")
 
     def s(x: Any) -> str | None:
@@ -116,13 +114,6 @@ def quantity_parse(expr: str, variant: str) -> dict[str, Any]:
     }
 
 
-def quantity_preview_dict(expr: str, variant: str, is_latex: bool) -> dict[str, Any]:
-    params = quantity_params(variant)
-    if is_latex:
-        params["is_latex"] = True
-    return dict(quantity_preview(expr, params)["preview"])
-
-
 # --- Probe layout: must stay key-for-key identical to capture_v0_1.py. ---
 
 
@@ -140,9 +131,6 @@ def collect() -> dict[str, Any]:
     for variant in QUANTITY_VARIANTS:
         for expr in QUANTITY_INPUTS:
             out[f"quantity.parse|{variant}|{expr}"] = probe(quantity_parse, expr, variant)
-            out[f"quantity.preview|{variant}|{expr}"] = probe(quantity_preview_dict, expr, variant, False)
-    for expr in QUANTITY_LATEX_INPUTS:
-        out[f"quantity.preview_latex|natural|{expr}"] = probe(quantity_preview_dict, expr, "natural", True)
     return out
 
 
