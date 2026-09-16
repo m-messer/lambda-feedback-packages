@@ -3,7 +3,7 @@
 import pytest
 from sympy import Rational
 
-from compareexpressions.expression_parsing import ExpressionParsingError, FeedbackTag, Preprocessed
+from compareexpressions.expression_parsing import ExpressionParsingError, FeedbackTag
 from compareexpressions.units import (
     CONVERSION_TO_BASE_SI,
     REVERTED_UNIT,
@@ -121,11 +121,10 @@ class TestPhysicalQuantity:
 
 class TestPreprocessing:
     def test_same_shape_as_expression_preprocessing(self):
-        result = preprocess_quantity("response", "5 μ s", QuantityParams())
-        assert result == Preprocessed("5 micros")
+        assert preprocess_quantity("response", "5 μ s", QuantityParams()) == "5 micros"
 
     def test_legacy(self):
         with pytest.deprecated_call():
             legacy_params = QuantityParams(legacy_preprocessing=True)
-        assert preprocess_quantity("response", "100Pa", legacy_params).expression == "100 Pa"
-        assert preprocess_quantity("response", "newton*metre", legacy_params).expression == "newton metre"
+        assert preprocess_quantity("response", "100Pa", legacy_params) == "100 Pa"
+        assert preprocess_quantity("response", "newton*metre", legacy_params) == "newton metre"

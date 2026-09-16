@@ -6,21 +6,19 @@ import re
 from collections.abc import Callable
 from functools import cache
 
-from compareexpressions.expression_parsing import Preprocessed
-
 from .data import ALL_UNITS, SI_PREFIXES
 from .params import QuantityParams
 
 
-def preprocess_quantity(name: str, expr: str, params: QuantityParams) -> Preprocessed:
-    """Normalise prefix spellings (or apply the legacy rewrites); never raises feedback.
+def preprocess_quantity(name: str, expr: str, params: QuantityParams) -> str:
+    """Normalise prefix spellings (or apply the legacy rewrites); never raises.
 
     Same shape as ``expression_parsing.preprocess_expression``, so either can
     serve as a context's preprocessing step. ``name`` is unused.
     """
     if params.legacy_preprocessing:
-        return Preprocessed(preprocess_legacy(expr))
-    return Preprocessed(transform_prefixes_to_standard(expr))
+        return preprocess_legacy(expr)
+    return transform_prefixes_to_standard(expr)
 
 
 def _rewrite_all(pattern: re.Pattern[str], expr: str, rewrite: Callable[[str, re.Match[str]], str]) -> str:
