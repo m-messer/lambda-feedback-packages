@@ -81,7 +81,9 @@ class SympyParsingConfig:
             # Assumptions become Symbol keyword arguments; SymPy stores any identifier.
             if not assumption.isidentifier():
                 raise SymbolAssumptionError(
-                    f"Assumption {assumption} for symbol {symbol} is not a valid assumption name."
+                    f"Assumption {assumption} for symbol {symbol} is not a valid assumption name.",
+                    symbol=symbol,
+                    assumption=assumption,
                 )
             try:
                 if assumption.lower() == "constant":
@@ -91,7 +93,11 @@ class SympyParsingConfig:
                 else:
                     symbol_dict[symbol] = Symbol(symbol, **{assumption: True})
             except Exception as e:
-                raise SymbolAssumptionError(f"Assumption {assumption} for symbol {symbol} caused a problem.") from e
+                raise SymbolAssumptionError(
+                    f"Assumption {assumption} for symbol {symbol} caused a problem.",
+                    symbol=symbol,
+                    assumption=assumption,
+                ) from e
         return cls(
             unsplittable_symbols=tuple(unsplittable),
             strict_syntax=params.strict_syntax,
@@ -155,7 +161,8 @@ def _parse_expr(expr: str, **kwargs: Any) -> Any:
     for warning in caught:
         if issubclass(warning.category, SymPyDeprecationWarning) and "non-Expr" in str(warning.message):
             raise ExpressionParsingError(
-                f"Arithmetic on a set ({{...}}) is not supported in {expr!r}; use ( ) for grouping."
+                f"Arithmetic on a set ({{...}}) is not supported in {expr!r}; use ( ) for grouping.",
+                expression=expr,
             )
         warnings.warn_explicit(warning.message, warning.category, warning.filename, warning.lineno)
     return parsed
@@ -174,7 +181,7 @@ def _parse_one(expr: str, config: SympyParsingConfig, transformations: tuple[Any
 
     symbol_dict = dict(config.symbol_dict)
     if expr.count("=") > 1:
-        raise ExpressionParsingError(f"An expression can contain at most one '=': {expr}")
+        raise ExpressionParsingError(f"An expression can contain at most one '=': {expr}", expression=expr)
     parsed: Any
     if "=" in expr:
         lhs, rhs = expr.split("=")
@@ -190,7 +197,7 @@ def _parse_one(expr: str, config: SympyParsingConfig, transformations: tuple[Any
     else:
         parsed = _parse_expr(expr, transformations=transformations, local_dict=symbol_dict, evaluate=False)
     if not isinstance(parsed, Basic):
-        raise ExpressionParsingError(f"Failed to parse Sympy expression `{expr}`")
+        raise ExpressionParsingError(f"Failed to parse Sympy expression `{expr}`", expression=expr)
     return parsed
 
 

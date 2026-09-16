@@ -76,14 +76,16 @@ def parse_symbol_assumptions(text: str) -> tuple[tuple[str, str], ...]:
     while index > -1:
         index_match = find_matching_parenthesis(text, index)
         if index_match < 0:
-            raise SymbolAssumptionError("List of symbol assumptions not written correctly.")
+            raise SymbolAssumptionError("List of symbol assumptions not written correctly.", text=text)
         try:
             value = ast.literal_eval(text[index + 1 : index_match])
         except (ValueError, SyntaxError, TypeError, MemoryError, RecursionError) as e:
-            raise SymbolAssumptionError("List of symbol assumptions not written correctly.") from e
+            raise SymbolAssumptionError("List of symbol assumptions not written correctly.", text=text) from e
         if not (isinstance(value, tuple) and len(value) == 2 and all(isinstance(v, str) for v in value)):
+            pair_text = text[index : index_match + 1]
             raise SymbolAssumptionError(
-                f"Symbol assumption {text[index : index_match + 1]} must be a pair of strings, e.g. ('x', 'positive')."
+                f"Symbol assumption {pair_text} must be a pair of strings, e.g. ('x', 'positive').",
+                text=pair_text,
             )
         assumptions.append(value)
         index = text.find("(", index_match + 1)

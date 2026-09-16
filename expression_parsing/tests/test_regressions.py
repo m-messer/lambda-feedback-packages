@@ -9,6 +9,8 @@ import pytest
 
 from compareexpressions.expression_parsing import (
     ExpressionParams,
+    LatexParseError,
+    SymbolAssumptionError,
     SympyParsingConfig,
     create_expression_set,
     parse_expression,
@@ -31,8 +33,9 @@ class TestSymbolAssumptions:
         assert "pwned_by_assumptions" not in sys.modules
 
     def test_assumption_names_must_be_identifiers(self):
-        with pytest.raises(ValueError, match="positive=True"):
+        with pytest.raises(SymbolAssumptionError, match="positive=True") as info:
             parsing_params(symbol_assumptions="('x', 'positive=True')")
+        assert (info.value.symbol, info.value.assumption) == ("x", "positive=True")
 
     def test_valid_assumptions_still_apply(self):
         params = parsing_params(symbol_assumptions="('a','positive') ('f','function') ('c','constant')")
@@ -107,10 +110,11 @@ class TestSanitiseLatex:
             "try:\n"
             "    sanitise_latex(r'3 \\mathrm{kg')\n"
             "except LatexParseError as e:\n"
-            "    print('raised:', e)\n"
+            "    print('raised:', e, e.wrapper, e.response)\n"
         )
         result = subprocess.run([sys.executable, "-c", script], capture_output=True, text=True, timeout=30)
-        assert result.stdout.startswith("raised: Unclosed \\mathrm{")
+        assert result.stdout.startswith(r"raised: Unclosed \mathrm{")
+        assert result.stdout.strip().endswith(r"\mathrm 3\mathrm{kg")
 
 
 class TestLatexEquations:
@@ -121,5 +125,6 @@ class TestLatexEquations:
         assert parse_latex(r"\frac{x}{2} = y + 1", {}) == "Eq(x/2, y + 1)"
 
     def test_more_than_one_equals_sign_is_rejected(self):
-        with pytest.raises(ValueError, match="="):
+        with pytest.raises(LatexParseError, match="=") as info:
             parse_latex("x = y = 2", {})
+        assert info.value.expression == "x = y = 2"

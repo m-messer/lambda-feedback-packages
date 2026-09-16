@@ -142,7 +142,7 @@ def parse_latex(response: str, symbols: Mapping[str, SymbolSpec], simplify: bool
         try:
             substitutions[_latex2sympy(latex)] = Symbol(code)
         except Exception as e:
-            raise LatexParseError(f"Couldn't parse latex symbol {latex} to sympy symbol.") from e
+            raise LatexParseError(f"Couldn't parse latex symbol {latex} to sympy symbol.", symbol=latex) from e
         for alias in spec.aliases:
             try:
                 parsed_alias = parse_expr(
@@ -158,7 +158,7 @@ def parse_latex(response: str, symbols: Mapping[str, SymbolSpec], simplify: bool
     parsed_responses = set()
     for expression in responses:
         if expression.count("=") > 1:
-            raise LatexParseError(f"An expression can contain at most one '=': {expression}")
+            raise LatexParseError(f"An expression can contain at most one '=': {expression}", expression=expression)
         try:
             if "=" in expression:
                 # Split equations here: PyPI's latex2sympy2 reads "x = 2" as an
@@ -168,7 +168,7 @@ def parse_latex(response: str, symbols: Mapping[str, SymbolSpec], simplify: bool
             else:
                 parsed = _latex2sympy(expression, substitutions)
         except Exception as e:
-            raise LatexParseError(f"Failed to parse expression during preview: {e}") from e
+            raise LatexParseError(f"Failed to parse expression {expression!r}: {e}", expression=expression) from e
         if simplify:
             parsed = parsed.simplify()
         parsed_responses.add(str(parsed.subs(substitutions)))
@@ -192,7 +192,9 @@ def sanitise_latex(response: str) -> str:
             processed.append(response[index:wrapper_start])
             wrapper_end = find_matching_parenthesis(response, wrapper_start + 1, delimiters=("{", "}"))
             if wrapper_end < 0:
-                raise LatexParseError(f"Unclosed {wrapper}{{...}} in {response!r}.")
+                raise LatexParseError(
+                    f"Unclosed {wrapper}{{...}} in {response!r}.", response=response, wrapper=wrapper
+                )
             processed.append(response[wrapper_start + len(wrapper) + 1 : wrapper_end])
             index = wrapper_end + 1
         response = "".join(processed)

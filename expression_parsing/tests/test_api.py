@@ -136,8 +136,9 @@ class TestLatex:
         assert parse_latex(r"1 \pm x", {}) == "{1 - x, x + 1}"
 
     def test_unparseable_symbol_latex(self):
-        with pytest.raises(LatexParseError, match="symbol"):
+        with pytest.raises(LatexParseError, match="symbol") as info:
             parse_latex("x", {"x": SymbolSpec(r"\frac{")})
+        assert info.value.symbol == r"\frac{"
 
     def test_sanitise_latex_unwraps_text(self):
         assert sanitise_latex(r"3 \mathrm{kg}~\text{m}") == "3kg m"
