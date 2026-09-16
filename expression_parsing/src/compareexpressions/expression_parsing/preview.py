@@ -8,7 +8,7 @@ from typing import Any, NotRequired, TypedDict
 from sympy import Basic
 from sympy.parsing.sympy_parser import T as TRANSFORMATIONS
 
-from .errors import ExpressionParsingError, ExpressionSyntaxError
+from .errors import AbsoluteValueNotationError, BracketNotationError, ExpressionParsingError, ExpressionSyntaxError
 from .feedback import FeedbackTag, FeedbackTagName
 from .latex import parse_latex, sympy_to_latex
 from .params import ExpressionParams, as_params
@@ -39,12 +39,14 @@ def parse_symbolic(response: str, params: ExpressionParams) -> tuple[list[Basic 
     when an expression can't be parsed.
     """
     responses = []
-    feedback = []
+    feedback: list[FeedbackTag] = []
     for expression in create_expression_set(response, params):
         expression = substitute_input_symbols([expression.strip()], params)[0]
-        expression, abs_feedback = convert_absolute_notation(expression, "response")
-        if abs_feedback is not None:
-            feedback.append(abs_feedback)
+        try:
+            expression = convert_absolute_notation(expression, "response")
+        except AbsoluteValueNotationError as exc:
+            feedback.append(FeedbackTag(FeedbackTagName.ABSOLUTE_VALUE_NOTATION_AMBIGUITY, {"name": exc.name}))
+            expression = exc.expression
         responses.append(expression)
 
     config = SympyParsingConfig.from_params(params)
@@ -82,7 +84,10 @@ def preview_function(response: str, params: ExpressionParams | Mapping[str, Any]
                 sympy_out = [parse_latex(part, params.symbols, params.simplify)]
             else:
                 symbolic_params = params.replace(rationalise=False)
-                preprocessed = preprocess_expression("response", part, symbolic_params).expression
+                try:
+                    preprocessed = preprocess_expression("response", part, symbolic_params)
+                except (BracketNotationError, AbsoluteValueNotationError) as exc:
+                    preprocessed = exc.expression
                 expressions, _ = parse_symbolic(preprocessed, symbolic_params)
                 latex_out = sorted(
                     sympy_to_latex(expression, params.symbols, settings={"mul_symbol": r" \cdot "})

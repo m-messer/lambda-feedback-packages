@@ -3,10 +3,9 @@
 from __future__ import annotations
 
 from collections.abc import Sequence
-from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from .feedback import FeedbackTag, FeedbackTagName
+from .errors import AbsoluteValueNotationError, BracketNotationError
 from .substitution import substitute_input_symbols
 
 if TYPE_CHECKING:
@@ -81,29 +80,32 @@ def create_expression_set(exprs: str | Sequence[str], params: ExpressionParams) 
     return list(expanded)
 
 
-def convert_bracket_notation(expr: str) -> tuple[str, FeedbackTag | None]:
+def convert_bracket_notation(expr: str) -> str:
     """Accept ``[]`` and ``{}`` as grouping brackets by rewriting them as ``()``.
 
     SymPy reserves ``[]`` and ``{}`` for lists and sets. A ``{}`` spanning the
     whole expression is kept, as it denotes a set of acceptable answers (see
     :func:`create_expression_set`). Brackets must be closed with the same
-    kind: for mismatched brackets (e.g. ``[x+y)``) the expression is returned
-    unchanged with ``BRACKET_NOTATION_MISMATCH`` feedback.
+    kind: for mismatched brackets (e.g. ``[x+y)``) a :class:`BracketNotationError`
+    is raised, carrying the same rewrite as a best-effort guess (often still
+    parseable, since a wrong-*kind* mismatch is fixed by the rewrite itself).
     """
-    if not has_matching_brackets(expr):
-        return expr, FeedbackTag(FeedbackTagName.BRACKET_NOTATION_MISMATCH, {"x": expr})
-    expr = expr.replace("[", "(").replace("]", ")")
-    if is_multiple_answers_wrapper(expr):
-        return expr, None
-    return expr.replace("{", "(").replace("}", ")"), None
+    matched = has_matching_brackets(expr)
+    guess = expr.replace("[", "(").replace("]", ")")
+    if not (matched and is_multiple_answers_wrapper(guess)):
+        guess = guess.replace("{", "(").replace("}", ")")
+    if not matched:
+        raise BracketNotationError(guess)
+    return guess
 
 
-def convert_absolute_notation(expr: str, name: str) -> tuple[str, FeedbackTag | None]:
+def convert_absolute_notation(expr: str, name: str) -> str:
     """Rewrite ``|x|`` as ``Abs(x)``.
 
     Nested ``|`` cannot be handled: each ``|`` is paired with the closest one
-    to its right, and ``ABSOLUTE_VALUE_NOTATION_AMBIGUITY`` feedback (naming
-    ``name``, e.g. ``"response"``) is returned when that guess was needed.
+    to its right, and an :class:`AbsoluteValueNotationError` (naming ``name``,
+    e.g. ``"response"``) is raised, carrying the best guess, when that
+    pairing was ambiguous.
     """
     n_pipes = expr.count("|")
     ambiguous: list[int] = []
@@ -155,31 +157,33 @@ def convert_absolute_notation(expr: str, name: str) -> tuple[str, FeedbackTag | 
         expr = "".join(chars)
 
     if n_pipes > 2 and ambiguous:
-        return expr, FeedbackTag(FeedbackTagName.ABSOLUTE_VALUE_NOTATION_AMBIGUITY, {"name": name})
-    return expr, None
+        raise AbsoluteValueNotationError(expr, name)
+    return expr
 
 
-@dataclass(frozen=True)
-class Preprocessed:
-    """A preprocessed expression and the feedback raised while preprocessing it."""
-
-    expression: str
-    feedback: FeedbackTag | None = None
-
-    @property
-    def success(self) -> bool:
-        return self.feedback is None
-
-
-def preprocess_expression(name: str, expr: str, params: ExpressionParams) -> Preprocessed:
+def preprocess_expression(name: str, expr: str, params: ExpressionParams) -> str:
     """Substitute symbol aliases and rewrite bracket and absolute-value notation.
 
-    ``name`` (e.g. ``"response"``) is used in feedback. Bracket feedback takes
-    precedence over absolute-value feedback.
+    ``name`` (e.g. ``"response"``) identifies what's being preprocessed in
+    raised exceptions. Both bracket and absolute-value notation are always
+    attempted, in sequence, and the resulting best-effort rewrite is always
+    computed even when raising; a :class:`BracketNotationError` takes
+    precedence over an :class:`AbsoluteValueNotationError` when both apply.
     """
     expr = substitute_input_symbols(expr.strip(), params)[0]
-    bracket_feedback = None
+    bracket_error: BracketNotationError | None = None
     if not params.strict_syntax:
-        expr, bracket_feedback = convert_bracket_notation(expr)
-    expr, abs_feedback = convert_absolute_notation(expr, name)
-    return Preprocessed(expr, bracket_feedback or abs_feedback)
+        try:
+            expr = convert_bracket_notation(expr)
+        except BracketNotationError as exc:
+            expr = exc.expression
+            bracket_error = exc
+    try:
+        expr = convert_absolute_notation(expr, name)
+    except AbsoluteValueNotationError as exc:
+        expr = exc.expression
+        if bracket_error is None:
+            raise
+    if bracket_error is not None:
+        raise BracketNotationError(expr)
+    return expr

@@ -56,6 +56,32 @@ class LatexParseError(ExpressionParsingError):
         self.wrapper = wrapper
 
 
+class BracketNotationError(ExpressionParsingError):
+    """Brackets closed with a different kind than opened (e.g. ``[x+y)``).
+
+    ``expression`` is a best-effort rewrite (every bracket kind collapsed to
+    ``()``): often this parses fine (a wrong-*kind* mismatch), but it may
+    still fail if the brackets are genuinely unbalanced.
+    """
+
+    def __init__(self, expression: str) -> None:
+        super().__init__(f"Mismatched brackets in {expression!r}.")
+        self.expression: str = expression
+
+
+class AbsoluteValueNotationError(ExpressionParsingError):
+    """``|...|`` pairs that could not be matched unambiguously.
+
+    ``expression`` is a best-guess rewrite of ``|...|`` as ``Abs(...)``;
+    ``name`` (e.g. ``"response"``) identifies what was being converted.
+    """
+
+    def __init__(self, expression: str, name: str) -> None:
+        super().__init__(f"Ambiguous absolute value notation in {name}: {expression!r}.")
+        self.expression: str = expression
+        self.name = name
+
+
 class ExpressionSyntaxError(ExpressionParsingError):
     """A response could not be parsed; ``feedback`` is the tag to show the learner."""
 

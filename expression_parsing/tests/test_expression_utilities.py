@@ -2,6 +2,8 @@ import pytest
 from sympy import Symbol, sqrt
 
 from compareexpressions.expression_parsing import (
+    AbsoluteValueNotationError,
+    BracketNotationError,
     ExpressionParams,
     SymbolSpec,
     compute_relative_tolerance_from_significant_decimals,
@@ -66,27 +68,26 @@ class TestConvertUnicodeDashes:
 
 class TestConvertAbsoluteNotation:
     @pytest.mark.parametrize(
-        "expr, expected_expr, has_feedback",
+        "expr, expected_expr",
         [
             # No pipes — unchanged
-            ("x+y", "x+y", False),
+            ("x+y", "x+y"),
             # Exactly two pipes — simple conversion
-            ("|x|", "Abs(x)", False),
-            ("|x+y|", "Abs(x+y)", False),
+            ("|x|", "Abs(x)"),
+            ("|x+y|", "Abs(x+y)"),
             # Two non-adjacent absolute values
-            ("|x|+|y|", "Abs(x)+Abs(y)", False),
+            ("|x|+|y|", "Abs(x)+Abs(y)"),
         ],
     )
-    def test_convert_absolute_notation(self, expr, expected_expr, has_feedback):
-        result_expr, feedback = convert_absolute_notation(expr, "response")
-        assert result_expr == expected_expr
-        assert (feedback is not None) == has_feedback
+    def test_convert_absolute_notation(self, expr, expected_expr):
+        assert convert_absolute_notation(expr, "response") == expected_expr
 
-    def test_ambiguous_pipes_produce_feedback(self):
-        # More than 2 pipes with ambiguous positions produces feedback
-        _, feedback = convert_absolute_notation("|x|y|z|", "response")
-        assert feedback is not None
-        assert feedback.tag == "ABSOLUTE_VALUE_NOTATION_AMBIGUITY"
+    def test_ambiguous_pipes_raise(self):
+        # More than 2 pipes with ambiguous positions raises, carrying the guess and the name.
+        with pytest.raises(AbsoluteValueNotationError) as info:
+            convert_absolute_notation("|x|y|z|", "response")
+        assert info.value.expression == "Abs(x)y*Abs(z)"
+        assert info.value.name == "response"
 
 
 class TestTransformUnicodeGreekSymbols:
@@ -218,30 +219,27 @@ class TestConvertBracketNotation:
         ],
     )
     def test_matched_brackets_are_converted(self, expr, expected):
-        result, feedback = convert_bracket_notation(expr)
-        assert result == expected
-        assert feedback is None
+        assert convert_bracket_notation(expr) == expected
 
     def test_multiple_answers_wrapper_left_untouched(self):
-        result, feedback = convert_bracket_notation("{x+1, x-1}")
-        assert result == "{x+1, x-1}"
-        assert feedback is None
+        assert convert_bracket_notation("{x+1, x-1}") == "{x+1, x-1}"
 
     @pytest.mark.parametrize(
-        "expr",
+        "expr, guess",
         [
-            "[x+y)",
-            "(x+y]",
-            "{x+y)",
-            "[x+y",
-            "x+y]",
+            # Wrong bracket *kind* — the guess collapses the distinction and parses fine.
+            ("[x+y)", "(x+y)"),
+            ("(x+y]", "(x+y)"),
+            ("{x+y)", "(x+y)"),
+            # Genuinely unbalanced — the guess still doesn't balance.
+            ("[x+y", "(x+y"),
+            ("x+y]", "x+y)"),
         ],
     )
-    def test_mismatched_brackets_are_rejected(self, expr):
-        result, feedback = convert_bracket_notation(expr)
-        assert result == expr
-        assert feedback is not None
-        assert feedback.tag == "BRACKET_NOTATION_MISMATCH"
+    def test_mismatched_brackets_raise_with_a_best_guess(self, expr, guess):
+        with pytest.raises(BracketNotationError) as info:
+            convert_bracket_notation(expr)
+        assert info.value.expression == guess
 
 
 class TestSubstitute:
@@ -433,46 +431,38 @@ class TestIsMultipleAnswersWrapper:
 
 class TestPreprocessExpression:
     def test_plain_expression_succeeds(self):
-        preprocessed = preprocess_expression("response", "x+y", ExpressionParams())
-        success, expr, feedback = preprocessed.success, preprocessed.expression, preprocessed.feedback
-        assert success is True
-        assert expr == "x+y"
-        assert feedback is None
+        assert preprocess_expression("response", "x+y", ExpressionParams()) == "x+y"
 
     def test_absolute_value_notation_converted(self):
-        preprocessed = preprocess_expression("response", "|x|", ExpressionParams())
-        success, expr, feedback = preprocessed.success, preprocessed.expression, preprocessed.feedback
-        assert success is True
-        assert expr == "Abs(x)"
-        assert feedback is None
+        assert preprocess_expression("response", "|x|", ExpressionParams()) == "Abs(x)"
 
-    def test_ambiguous_pipes_returns_failure(self):
-        preprocessed = preprocess_expression("response", "|x|y|z|", ExpressionParams())
-        assert preprocessed.success is False
-        assert preprocessed.feedback is not None
-        assert preprocessed.feedback.tag == "ABSOLUTE_VALUE_NOTATION_AMBIGUITY"
+    def test_ambiguous_pipes_raise(self):
+        with pytest.raises(AbsoluteValueNotationError) as info:
+            preprocess_expression("response", "|x|y|z|", ExpressionParams())
+        assert info.value.name == "response"
 
     def test_square_brackets_converted(self):
-        preprocessed = preprocess_expression("response", "[x+y]", ExpressionParams())
-        success, expr, feedback = preprocessed.success, preprocessed.expression, preprocessed.feedback
-        assert success is True
-        assert expr == "(x+y)"
-        assert feedback is None
+        assert preprocess_expression("response", "[x+y]", ExpressionParams()) == "(x+y)"
 
     @pytest.mark.parametrize(
-        "expr",
+        "expr, guess",
         [
-            "[x+y)",
-            "(x+y]",
-            "{x+y)",
-            "[x+y",
-            "x+y]",
+            # Wrong bracket kind — the guess parses fine.
+            ("[x+y)", "(x+y)"),
+            ("(x+y]", "(x+y)"),
+            ("{x+y)", "(x+y)"),
+            # Genuinely unbalanced — the guess still doesn't balance.
+            ("[x+y", "(x+y"),
+            ("x+y]", "x+y)"),
         ],
     )
-    def test_mismatched_brackets_returns_failure(self, expr):
-        preprocessed = preprocess_expression("response", expr, ExpressionParams())
-        success, result, feedback = preprocessed.success, preprocessed.expression, preprocessed.feedback
-        assert success is False
-        assert result == expr
-        assert feedback is not None
-        assert feedback.tag == "BRACKET_NOTATION_MISMATCH"
+    def test_mismatched_brackets_raise_with_a_best_guess(self, expr, guess):
+        with pytest.raises(BracketNotationError) as info:
+            preprocess_expression("response", expr, ExpressionParams())
+        assert info.value.expression == guess
+
+    def test_bracket_mismatch_takes_precedence_over_absolute_value_ambiguity(self):
+        # Bracket error surfaces, but its guess still has the absolute-value guess applied.
+        with pytest.raises(BracketNotationError) as info:
+            preprocess_expression("response", "[x|y|z)", ExpressionParams())
+        assert info.value.expression == "(xAbs(y)z)"

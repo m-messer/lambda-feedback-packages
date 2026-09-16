@@ -170,7 +170,7 @@ def _parse_expr(expr: str, **kwargs: Any) -> Any:
 
 def _parse_one(expr: str, config: SympyParsingConfig, transformations: tuple[Any, ...]) -> Basic:
     if not config.strict_syntax:
-        expr, _ = convert_bracket_notation(expr)
+        expr = convert_bracket_notation(expr)
     expr = apply_convention(expr, config.convention)
 
     substitutions = [(name, f" {name} ") for name in config.unsplittable_symbols]

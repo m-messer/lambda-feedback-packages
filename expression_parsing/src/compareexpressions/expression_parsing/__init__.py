@@ -3,9 +3,9 @@
 Typical use::
 
     params = ExpressionParams.from_dict(evaluation_params)
-    pre = preprocess_expression("response", response, params)
-    expr = parse_expression(pre.expression, SympyParsingConfig.from_params(params))
-    latex = sympy_to_latex(expr, params.symbols)
+    expr = preprocess_expression("response", response, params)
+    parsed = parse_expression(expr, SympyParsingConfig.from_params(params))
+    latex = sympy_to_latex(parsed, params.symbols)
 
 or ``preview_function(response, evaluation_params)`` for a preview.
 
@@ -15,6 +15,8 @@ feedback is surfaced as :class:`FeedbackTag`.
 
 from .conventions import apply_convention, convention_parser
 from .errors import (
+    AbsoluteValueNotationError,
+    BracketNotationError,
     ExpressionParsingError,
     ExpressionSyntaxError,
     LatexParseError,
@@ -32,7 +34,6 @@ from .numbers import (
 )
 from .params import Convention, ExpressionParams, SymbolSpec, parse_symbol_assumptions
 from .preprocessing import (
-    Preprocessed,
     convert_absolute_notation,
     convert_bracket_notation,
     create_expression_set,
@@ -47,6 +48,8 @@ from .sympy_parsing import SympyParsingConfig, parse_expression, sympy_symbols
 
 __all__ = [
     "PATTERNS",
+    "AbsoluteValueNotationError",
+    "BracketNotationError",
     "Convention",
     "ExpressionParams",
     "ExpressionParsingError",
@@ -54,7 +57,6 @@ __all__ = [
     "FeedbackTag",
     "FeedbackTagName",
     "LatexParseError",
-    "Preprocessed",
     "Preview",
     "Result",
     "SymbolAssumptionError",
