@@ -7,7 +7,7 @@ Typical use::
     quantity.value, quantity.unit, quantity.dimension, quantity.standard_value
 
 Extracted from compareExpressions; unit-like text read as part of a value is
-reported as ``REVERTED_UNIT`` :class:`~compareexpressions.expression_parsing.FeedbackTag` messages.
+reported as ``REVERTED_UNIT`` :class:`FeedbackTag` messages.
 Previewing a response (LaTeX/SymPy rendering) is an app-layer concern and
 lives in compareExpressions, not here.
 """
@@ -28,6 +28,7 @@ from .data import (
     units_in,
 )
 from .errors import QuantityError, QuantityParseError, UnitConversionError
+from .feedback import FeedbackTag
 from .params import QuantityParams, Strictness
 from .parser import build_quantity_parser
 from .preprocessing import preprocess_legacy, preprocess_quantity, transform_prefixes_to_standard
@@ -46,6 +47,7 @@ __all__ = [
     "UNIT_SETS",
     "VERY_COMMON_UNITS",
     "BaseUnit",
+    "FeedbackTag",
     "PhysicalQuantity",
     "Prefix",
     "QuantityError",

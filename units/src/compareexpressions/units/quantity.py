@@ -5,7 +5,6 @@ from __future__ import annotations
 from typing import Any
 
 from compareexpressions.expression_parsing import (
-    FeedbackTag,
     SympyParsingConfig,
     parse_expression,
     parse_latex,
@@ -16,6 +15,7 @@ from compareexpressions.slr_parsing import ExprNode, SLRParser
 
 from .data import CONVERSION_TO_BASE_SI, SI_BASE_UNITS, SI_PREFIXES, units_in
 from .errors import QuantityParseError, UnitConversionError
+from .feedback import FeedbackTag
 from .params import QuantityParams
 from .parser import build_quantity_parser
 from .tags import QuantityTag

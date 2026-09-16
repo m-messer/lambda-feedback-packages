@@ -3,13 +3,14 @@
 import pytest
 from sympy import Rational
 
-from compareexpressions.expression_parsing import ExpressionParsingError, FeedbackTag
+from compareexpressions.expression_parsing import ExpressionParsingError
 from compareexpressions.units import (
     CONVERSION_TO_BASE_SI,
     REVERTED_UNIT,
     SI_BASE_UNITS,
     SI_PREFIXES,
     UNIT_SETS,
+    FeedbackTag,
     QuantityError,
     QuantityParams,
     QuantityParseError,
