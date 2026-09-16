@@ -5,11 +5,14 @@ from __future__ import annotations
 from typing import Any
 
 from compareexpressions.expression_parsing import (
+    AbsoluteValueNotationError,
+    BracketNotationError,
     SympyParsingConfig,
     parse_expression,
     parse_latex,
-    preview_function,
+    preprocess_expression,
     substitute,
+    sympy_to_latex,
 )
 from compareexpressions.slr_parsing import ExprNode, SLRParser
 
@@ -164,8 +167,22 @@ class PhysicalQuantity:
         if self.value is None:
             return None
         reserved = (*self.params.reserved_keywords, *_unsplittable_names(self.params, all_forms=True))
-        preview = preview_function(self.value.original_string(), self.params.replace(reserved_keywords=reserved))
-        return preview["preview"]["latex"]
+        params = self.params.replace(reserved_keywords=reserved, rationalise=False)
+        original = self.value.original_string()
+        if params.is_latex:
+            # A LaTeX value is previewed as-is (as expression_parsing.preview_function used to).
+            return original
+        try:
+            preprocessed = preprocess_expression("response", original, params)
+        except (BracketNotationError, AbsoluteValueNotationError) as exc:
+            # Best-effort: preview with the guessed rewrite rather than failing outright.
+            preprocessed = exc.expression
+        parsed = parse_expression(preprocessed, SympyParsingConfig.from_params(params))
+        settings = {"mul_symbol": r" \cdot "}
+        if isinstance(parsed, set):
+            parts = sorted(sympy_to_latex(expr, params.symbols, settings=settings) for expr in parsed)
+            return "\\left\\{" + ",~".join(parts) + "\\right\\}"
+        return sympy_to_latex(parsed, params.symbols, settings=settings)
 
     def _unit_latex(self, node: ExprNode) -> list[str]:
         # TODO: skip unnecessary parentheses (e.g. groups inside powers and fractions)
