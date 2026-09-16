@@ -70,8 +70,9 @@ class TestExpressionParams:
 
     @pytest.mark.parametrize("text", ["('a')", "('a', 'b', 'c')", "(1, 2)", "('a', 'positive'"])
     def test_malformed_symbol_assumptions(self, text):
-        with pytest.raises(SymbolAssumptionError):
+        with pytest.raises(SymbolAssumptionError) as info:
             parse_symbol_assumptions(text)
+        assert info.value.text is not None
 
     def test_unknown_convention(self):
         with pytest.raises(UnknownConventionError, match="Unknown convention") as info:
