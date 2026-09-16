@@ -8,6 +8,10 @@ Further tidy-up after the 0.2.0 extraction: this package is unit conversion only
 
 - `parse_quantity` and `preprocess_quantity` now take `QuantityParams` only; the `Mapping[str, Any]` (raw dict) fallback is gone, along with the `as_quantity_params` helper. Convert evaluation-function parameters explicitly at the call site with `QuantityParams.from_dict(evaluation_params)`.
 - `preview_function` and `fix_exponents` have moved out of this package entirely, to compareExpressions (`app/context/physical_quantity_preview.py`): building a LaTeX/SymPy preview string is an app-layer display concern, not unit conversion. Import them from there instead of `compareexpressions.units`.
+- `preprocess_quantity` now returns a plain `str` (`expression_parsing.preprocess_expression`, which it matches the shape of, no longer returns `Preprocessed`).
+- `FeedbackTag` (used by `PhysicalQuantity.messages` for `REVERTED_UNIT`) is now defined locally in this package (`compareexpressions.units.FeedbackTag`) rather than imported from `expression_parsing`, which no longer exposes it.
+- `PhysicalQuantity.value_latex` no longer calls `expression_parsing.preview_function` (removed): it builds the LaTeX directly from `preprocess_expression` + `parse_expression` + `sympy_to_latex`, catching `BracketNotationError`/`AbsoluteValueNotationError` to preview with the best-guess rewrite rather than failing outright (matching the old behaviour of ignoring preprocessing feedback).
+- Requires `compareexpressions-expression-parsing` 0.3.0 or later.
 
 ### Deprecated
 

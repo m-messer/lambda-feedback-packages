@@ -11,7 +11,7 @@ description = "Unit system data, physical-quantity parsing and dimensional analy
 requires-python = ">=3.11,<3.13"
 dependencies = [
     "compareexpressions-slr-parsing (>=0.2.0,<0.3.0)",
-    "compareexpressions-expression-parsing (>=0.2.0,<0.3.0)",
+    "compareexpressions-expression-parsing (>=0.3.0,<0.4.0)",
     "sympy (>=1.12,<2.0)",
 ]
 
