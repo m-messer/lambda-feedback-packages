@@ -146,6 +146,8 @@ EXPRESSION_INPUTS = [
     "x +",
 ]
 
+# Used by capture_v0_1.py only (the expr.preview_latex probes were dropped from
+# check.py in 0.3.0: preview_function moved out of the expression_parsing package it checks).
 LATEX_INPUTS = [
     r"\frac{x + x^2 + x}{x}",
     r"\frac{x + x^2 + x}{x} = y",

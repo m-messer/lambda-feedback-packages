@@ -31,7 +31,6 @@ from corpus import (  # noqa: E402
     CRITERIA_STRINGS,
     EXPRESSION_INPUTS,
     EXPRESSION_VARIANTS,
-    LATEX_INPUTS,
     QUANTITY_INPUTS,
     QUANTITY_VARIANTS,
 )
@@ -43,7 +42,6 @@ from compareexpressions.expression_parsing import (  # noqa: E402
     parse_expression,
     sympy_to_latex,
 )
-from compareexpressions.expression_parsing import preview_function as symbolic_preview  # noqa: E402
 from compareexpressions.units import QuantityParams, parse_quantity  # noqa: E402
 
 ERROR = "ERROR"
@@ -76,13 +74,6 @@ def expression_parse(expr: str, variant: str) -> dict[str, Any]:
     if isinstance(parsed, set):
         return {"parsed": sorted(str(p) for p in parsed)}
     return {"parsed": str(parsed), "latex": sympy_to_latex(parsed, params.symbols)}
-
-
-def expression_preview(expr: str, variant: str, is_latex: bool) -> dict[str, Any]:
-    params = expression_params(variant)
-    if is_latex:
-        params["is_latex"] = True
-    return dict(symbolic_preview(expr, params)["preview"])
 
 
 def quantity_params(variant: str) -> dict[str, Any]:
@@ -124,10 +115,6 @@ def collect() -> dict[str, Any]:
     for variant in EXPRESSION_VARIANTS:
         for expr in EXPRESSION_INPUTS:
             out[f"expr.parse|{variant}|{expr}"] = probe(expression_parse, expr, variant)
-            out[f"expr.preview|{variant}|{expr}"] = probe(expression_preview, expr, variant, False)
-    for variant in ("default", "symbols"):
-        for expr in LATEX_INPUTS:
-            out[f"expr.preview_latex|{variant}|{expr}"] = probe(expression_preview, expr, variant, True)
     for variant in QUANTITY_VARIANTS:
         for expr in QUANTITY_INPUTS:
             out[f"quantity.parse|{variant}|{expr}"] = probe(quantity_parse, expr, variant)

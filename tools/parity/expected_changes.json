@@ -185,59 +185,6 @@
    "parsed": "lamda"
   }
  },
- "expr.preview_latex|symbols|\\Lambda_0 + 1": {
-  "reason": "expression_parsing: task symbols are normalised once (lambda -> lamda) in ExpressionParams, so every path maps the task's lambda to lamda and prints it with the task's LaTeX",
-  "value": {
-   "latex": "\\Lambda_0 + 1",
-   "sympy": "lamda + 1"
-  }
- },
- "expr.preview|default|2E": {
-  "reason": "slr_parsing: the convention parser no longer scans a capital E as its expression-node symbol, so inputs like 2E / xE parse",
-  "value": {
-   "latex": "2 \\cdot E",
-   "sympy": "2E"
-  }
- },
- "expr.preview|default|xE": {
-  "reason": "slr_parsing: the convention parser no longer scans a capital E as its expression-node symbol, so inputs like 2E / xE parse",
-  "value": {
-   "latex": "E \\cdot x",
-   "sympy": "xE"
-  }
- },
- "expr.preview|strict|xE": {
-  "reason": "slr_parsing: the convention parser no longer scans a capital E as its expression-node symbol, so inputs like 2E / xE parse",
-  "value": {
-   "latex": "xE",
-   "sympy": "xE"
-  }
- },
- "expr.preview|strict|{x+1}*{x-1}": {
-  "reason": "expression_parsing: arithmetic on {} set literals (strict syntax) is rejected instead of building a deprecated Mul(FiniteSet, ...)",
-  "value": "ERROR"
- },
- "expr.preview|symbols|lam + lambda": {
-  "reason": "expression_parsing: a user-defined lambda symbol keeps its LaTeX (it was overwritten by the default \\lambda on the second internal substitution pass)",
-  "value": {
-   "latex": "\\Lambda_0 + \\Lambda_0",
-   "sympy": "lamda + lamda"
-  }
- },
- "expr.preview|symbols|lambda x": {
-  "reason": "expression_parsing: a user-defined lambda symbol keeps its LaTeX (it was overwritten by the default \\lambda on the second internal substitution pass)",
-  "value": {
-   "latex": "\\Lambda_0 \\cdot x",
-   "sympy": "lamda x"
-  }
- },
- "expr.preview|symbols|λ": {
-  "reason": "expression_parsing: a user-defined lambda symbol keeps its LaTeX (it was overwritten by the default \\lambda on the second internal substitution pass)",
-  "value": {
-   "latex": "\\Lambda_0",
-   "sympy": "lamda"
-  }
- },
  "quantity.parse|legacy|(2 kg) (m/s)": {
   "reason": "units: a bracketed value+unit followed by a unit (e.g. '(2 m) s') no longer crashes; groups stay whole, so it reads like '(2 m)' alone (all unit)",
   "value": {
