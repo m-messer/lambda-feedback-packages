@@ -1,5 +1,16 @@
 # Changelog: compareexpressions-expression-parsing
 
+## 0.3.0 (unreleased)
+
+Further tidy-up after the 0.2.0 extraction: previewing a response and mapping failures to learner-facing feedback text are app-layer concerns, so they move out of this package.
+
+### Breaking
+
+- `preview_function`, `parse_symbolic`, `Preview`, `Result`, `ExpressionSyntaxError`, `FeedbackTag` and `FeedbackTagName` have moved out of this package entirely, to compareExpressions: rendering a response as LaTeX/SymPy, and mapping a tag to feedback text, are app-layer display concerns, not expression parsing.
+- `preprocess_expression`, `convert_bracket_notation` and `convert_absolute_notation` now return a plain `str` (raising instead of returning `Preprocessed`/a `(str, FeedbackTag | None)` tuple). The `Preprocessed` dataclass is gone. `BracketNotationError` and `AbsoluteValueNotationError` (both `ExpressionParsingError`) are raised on failure; each carries the best-guess rewrite as `.expression`, so a caller can catch it, decide whether to continue with the guess (adding non-fatal feedback) or propagate, exactly as `compareExpressions` already did per-context (learner response vs. answer/criteria).
+- `convert_bracket_notation` now computes a best-guess rewrite even on a bracket-kind mismatch (e.g. `[x+y)` guesses `(x+y)`), instead of leaving the expression untouched. This often recovers a wrong-*kind* mismatch outright; a genuinely unbalanced expression still fails downstream.
+- Every exception in `errors.py` now carries structured fields instead of only a message: `UnknownConventionError.convention`, `SymbolAssumptionError.text`/`.symbol`/`.assumption`, `LatexParseError.symbol`/`.expression`/`.response`/`.wrapper`, `ExpressionParsingError.expression` (the base, used by generic parse failures). The duplicated "Unknown convention" check (`conventions.py` and `params.py`) is now one `validate_convention` helper.
+
 ## 0.2.0 (unreleased)
 
 The first release after the extraction refactor. The import path is now `compareexpressions.expression_parsing` (was `expression_parsing`).
