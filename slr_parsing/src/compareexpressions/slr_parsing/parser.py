@@ -343,6 +343,47 @@ class SLRParser:
     def parsing_action(self, state: int, symbol: Token) -> int:
         return self.parsing_table[state][self._symbol_ids[symbol]]
 
+    def _run_error_handlers(
+        self,
+        action: int,
+        stack: list[int],
+        a: Token,
+        input_tokens: list[Token],
+        tokens: list[Token],
+        output: list[Any],
+    ) -> tuple[list[int], Token, list[Token], list[Token], list[Any], int]:
+        """Apply error-recovery handlers until ``action`` is non-negative, or raise."""
+        while action < 0:
+            if action == _ERROR:
+                raise self._parse_error(stack, a, input_tokens, tokens, output)
+            handler = self.error_handler[-2 - action].action
+            stack, a, input_tokens, tokens, output = handler(self, stack, a, input_tokens, tokens, output)
+            action = self.parsing_action(stack[-1], a)
+        return stack, a, input_tokens, tokens, output, action
+
+    def _shift(
+        self, action: int, a: Token, stack: list[int], tokens: list[Token], output: list[Any], trace: bool
+    ) -> Token:
+        stack.append(action)
+        output.append(ExprNode(a, []))
+        if trace:
+            logger.debug("shift to %s  %s", self.state_string(self.states[action]), output)
+        return tokens.pop(0)
+
+    def _reduce(self, action: int, n_states: int, stack: list[int], output: list[Any], trace: bool) -> list[Any]:
+        p = action - n_states
+        production = self._productions_token[p]
+        reduction = self._reductions[p]
+        if reduction is None:
+            raise GrammarError(f"Production {tuple(self.productions[p][:2])} has no reduction action.")
+        output = reduction(production, output, self.tag_handler)
+        del stack[-len(production[1]) :]
+        stack.append(self.parsing_action(stack[-1], production[0]))
+        if trace:
+            body = "".join(x.content for x in production[1])
+            logger.debug("reduce by %s --> %s  %s", production[0].content, body, output)
+        return output
+
     def parse(self, input_tokens: Sequence[Token]) -> list[Any]:
         """Parse scanned tokens; returns the output roots (normally exactly one).
 
@@ -359,41 +400,26 @@ class SLRParser:
         a = tokens.pop(0)
         stack = [0]
         output: list[Any] = []
-        while True:
+        result: list[Any] | None = None
+        while result is None:
             action = self.parsing_action(stack[-1], a)
-            while action < 0:
-                if action == _ERROR:
-                    raise self._parse_error(stack, a, input_tokens, tokens, output)
-                handler = self.error_handler[-2 - action].action
-                stack, a, input_tokens, tokens, output = handler(self, stack, a, input_tokens, tokens, output)
-                action = self.parsing_action(stack[-1], a)
+            stack, a, input_tokens, tokens, output, action = self._run_error_handlers(
+                action, stack, a, input_tokens, tokens, output
+            )
             if action < n_states:
-                stack.append(action)
-                output.append(ExprNode(a, []))
-                if trace:
-                    logger.debug("shift to %s  %s", self.state_string(self.states[action]), output)
-                a = tokens.pop(0)
+                a = self._shift(action, a, stack, tokens, output, trace)
             elif action == n_states:
                 logger.debug("accept")
+                result = output
                 if tokens and tokens != [self.end_token]:
-                    output += self.parse(tokens)
-                return output
+                    result = result + self.parse(tokens)
             elif action < n_states + len(self._productions_token):
-                p = action - n_states
-                production = self._productions_token[p]
-                reduction = self._reductions[p]
-                if reduction is None:
-                    raise GrammarError(f"Production {tuple(self.productions[p][:2])} has no reduction action.")
-                output = reduction(production, output, self.tag_handler)
-                stack = stack[: -len(production[1])]
-                stack.append(self.parsing_action(stack[-1], production[0]))
-                if trace:
-                    body = "".join(x.content for x in production[1])
-                    logger.debug("reduce by %s --> %s  %s", production[0].content, body, output)
+                output = self._reduce(action, n_states, stack, output, trace)
             else:
                 raise ParseError(
                     f"Invalid parse table entry {action}.", lookahead=a, remaining=tokens, stack=stack, output=output
                 )
+        return result
 
     def _parse_error(
         self, stack: list[int], a: Token, input_tokens: list[Token], tokens: list[Token], output: list[Any]

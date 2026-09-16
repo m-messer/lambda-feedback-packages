@@ -86,7 +86,7 @@ class TestParserConstruction:
         calls = []
 
         def record(name):
-            def action(production, output, tag_handler):
+            def action(_production, output, _tag_handler):
                 calls.append(name)
                 return output
 

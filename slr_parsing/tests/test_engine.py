@@ -177,12 +177,12 @@ class TestErrors:
         class IncompleteError(Exception):
             pass
 
-        def incomplete(*args):
+        def incomplete(*_args):
             raise IncompleteError
 
         handlers = [
             ErrorHandler(lambda items, next_symbol: next_symbol.label == "END", incomplete),
-            ErrorHandler(lambda items, next_symbol: True, lambda *args: pytest.fail("second handler ran")),
+            ErrorHandler(lambda items, next_symbol: True, lambda *_args: pytest.fail("second handler ran")),
         ]
         with pytest.raises(IncompleteError):
             parse("a+", make_parser(error_handler=handlers))

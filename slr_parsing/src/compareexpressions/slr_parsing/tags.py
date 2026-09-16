@@ -19,7 +19,7 @@ def intersection_rule(x: set[Any], y: set[Any]) -> set[Any]:
     return x & y
 
 
-def _always(tags: set[Any]) -> bool:
+def _always(_tags: set[Any]) -> bool:
     return True
 
 
