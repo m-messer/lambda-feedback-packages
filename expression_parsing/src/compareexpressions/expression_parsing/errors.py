@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-from .feedback import FeedbackTag
-
 
 class ExpressionParsingError(ValueError):
     """An expression or its parsing parameters could not be parsed."""
@@ -80,11 +78,3 @@ class AbsoluteValueNotationError(ExpressionParsingError):
         super().__init__(f"Ambiguous absolute value notation in {name}: {expression!r}.")
         self.expression: str = expression
         self.name = name
-
-
-class ExpressionSyntaxError(ExpressionParsingError):
-    """A response could not be parsed; ``feedback`` is the tag to show the learner."""
-
-    def __init__(self, feedback: FeedbackTag) -> None:
-        super().__init__(f"{feedback.tag}: {dict(feedback.inputs)}")
-        self.feedback = feedback

@@ -1,4 +1,4 @@
-"""Tests for the typed API introduced in 0.2.0: parameters, configuration, conventions, LaTeX, preview."""
+"""Tests for the typed API introduced in 0.2.0: parameters, configuration, conventions, LaTeX."""
 
 import pytest
 from sympy import E, I, Symbol
@@ -7,9 +7,6 @@ from compareexpressions.expression_parsing import (
     PATTERNS,
     ExpressionParams,
     ExpressionParsingError,
-    ExpressionSyntaxError,
-    FeedbackTag,
-    FeedbackTagName,
     LatexParseError,
     SymbolAssumptionError,
     SymbolSpec,
@@ -20,8 +17,6 @@ from compareexpressions.expression_parsing import (
     parse_expression,
     parse_latex,
     parse_symbol_assumptions,
-    parse_symbolic,
-    preview_function,
     sanitise_latex,
 )
 
@@ -142,27 +137,6 @@ class TestLatex:
 
     def test_sanitise_latex_unwraps_text(self):
         assert sanitise_latex(r"3 \mathrm{kg}~\text{m}") == "3kg m"
-
-
-class TestPreview:
-    def test_preview_accepts_typed_params(self):
-        params = ExpressionParams(elementary_functions=True)
-        assert preview_function("sin(x)", params)["preview"]["latex"] == r"\sin{\left(x \right)}"
-
-    def test_preview_result_fits_lf_toolkit_types(self):
-        preview_module = pytest.importorskip("lf_toolkit.preview")
-        result = preview_function("x+1", {})
-        assert set(result) == set(preview_module.Result.__annotations__)
-        assert set(result["preview"]) <= set(preview_module.Preview.__annotations__)
-
-    def test_parse_symbolic_reports_parse_errors_as_feedback(self):
-        with pytest.raises(ExpressionSyntaxError) as info:
-            parse_symbolic("x***2", ExpressionParams())
-        assert info.value.feedback == FeedbackTag(FeedbackTagName.PARSE_ERROR, {"response": "x***2"})
-        assert isinstance(info.value, ExpressionParsingError)
-
-    def test_feedback_tag_names_are_strings(self):
-        assert FeedbackTagName.PARSE_ERROR == "PARSE_ERROR"
 
 
 def test_written_as_patterns():

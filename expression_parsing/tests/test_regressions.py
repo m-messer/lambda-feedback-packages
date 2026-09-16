@@ -3,7 +3,6 @@
 import subprocess
 import sys
 import warnings
-from copy import deepcopy
 
 import pytest
 
@@ -15,7 +14,6 @@ from compareexpressions.expression_parsing import (
     create_expression_set,
     parse_expression,
     parse_latex,
-    preview_function,
     substitute_input_symbols,
     sympy_to_latex,
 )
@@ -83,12 +81,6 @@ class TestInputSymbols:
 
 
 class TestNoSideEffects:
-    def test_preview_does_not_mutate_params(self):
-        params = {"symbols": {"x": {"latex": "x", "aliases": ["xx"]}}}
-        before = deepcopy(params)
-        preview_function("xx + 1", params)
-        assert params == before
-
     def test_sympy_to_latex_does_not_mutate_settings(self):
         settings = {"mul_symbol": r" \cdot "}
         sympy_to_latex(parse_expression("2x", parsing_params()), {}, settings=settings)

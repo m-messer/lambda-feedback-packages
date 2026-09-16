@@ -1,4 +1,4 @@
-"""SymPy-based expression parsing, preprocessing and LaTeX preview.
+"""SymPy-based expression parsing and preprocessing.
 
 Typical use::
 
@@ -7,10 +7,12 @@ Typical use::
     parsed = parse_expression(expr, SympyParsingConfig.from_params(params))
     latex = sympy_to_latex(parsed, params.symbols)
 
-or ``preview_function(response, evaluation_params)`` for a preview.
-
-Extracted from compareExpressions and decoupled from its feedback strings:
-feedback is surfaced as :class:`FeedbackTag`.
+Extracted from compareExpressions: previewing a response and mapping
+failures to learner-facing feedback text are app-layer concerns and live in
+compareExpressions, not here. Failures are raised as typed exceptions (see
+:mod:`.errors`); the recoverable ones (:class:`BracketNotationError`,
+:class:`AbsoluteValueNotationError`) carry a best-guess rewrite as
+``.expression``, for a caller that wants to continue with the guess.
 """
 
 from .conventions import apply_convention, convention_parser
@@ -18,12 +20,10 @@ from .errors import (
     AbsoluteValueNotationError,
     BracketNotationError,
     ExpressionParsingError,
-    ExpressionSyntaxError,
     LatexParseError,
     SymbolAssumptionError,
     UnknownConventionError,
 )
-from .feedback import FeedbackTag, FeedbackTagName
 from .latex import extract_latex, latex_symbols, parse_latex, sanitise_latex, sympy_to_latex
 from .numbers import (
     PATTERNS,
@@ -42,7 +42,6 @@ from .preprocessing import (
     is_multiple_answers_wrapper,
     preprocess_expression,
 )
-from .preview import Preview, Result, parse_symbolic, preview_function
 from .substitution import substitute, substitute_input_symbols, substitutions_sort_key
 from .sympy_parsing import SympyParsingConfig, parse_expression, sympy_symbols
 
@@ -53,12 +52,7 @@ __all__ = [
     "Convention",
     "ExpressionParams",
     "ExpressionParsingError",
-    "ExpressionSyntaxError",
-    "FeedbackTag",
-    "FeedbackTagName",
     "LatexParseError",
-    "Preview",
-    "Result",
     "SymbolAssumptionError",
     "SymbolSpec",
     "SympyParsingConfig",
@@ -80,9 +74,7 @@ __all__ = [
     "parse_expression",
     "parse_latex",
     "parse_symbol_assumptions",
-    "parse_symbolic",
     "preprocess_expression",
-    "preview_function",
     "sanitise_latex",
     "substitute",
     "substitute_input_symbols",
