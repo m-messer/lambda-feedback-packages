@@ -12,11 +12,17 @@ from collections.abc import Iterable, Mapping
 from dataclasses import dataclass, field, fields, replace
 from typing import Any, Literal, Self, get_args
 
-from .errors import ExpressionParsingError, SymbolAssumptionError
+from .errors import SymbolAssumptionError, UnknownConventionError
 from .preprocessing import find_matching_parenthesis
 
 Convention = Literal["equal_precedence", "implicit_higher_precedence"]
 """How implicit multiplication binds relative to ``/``: ``a/bc`` is ``a/b*c`` or ``a/(b*c)``."""
+
+
+def validate_convention(convention: Convention | None) -> None:
+    """Raise :class:`UnknownConventionError` unless ``convention`` is ``None`` or recognised."""
+    if convention is not None and convention not in get_args(Convention):
+        raise UnknownConventionError(convention)
 
 
 @dataclass(frozen=True)
@@ -123,8 +129,7 @@ class ExpressionParams:
     minus_plus: str | None = None
 
     def __post_init__(self) -> None:
-        if self.convention is not None and self.convention not in get_args(Convention):
-            raise ExpressionParsingError(f"Unknown convention {self.convention!r}.")
+        validate_convention(self.convention)
         object.__setattr__(self, "symbols", _normalise_symbols(self.symbols))
         object.__setattr__(self, "input_symbols", _normalise_input_symbols(self.input_symbols))
         object.__setattr__(self, "reserved_keywords", tuple(self.reserved_keywords))

@@ -14,7 +14,13 @@ feedback is surfaced as :class:`FeedbackTag`.
 """
 
 from .conventions import apply_convention, convention_parser
-from .errors import ExpressionParsingError, ExpressionSyntaxError, LatexParseError, SymbolAssumptionError
+from .errors import (
+    ExpressionParsingError,
+    ExpressionSyntaxError,
+    LatexParseError,
+    SymbolAssumptionError,
+    UnknownConventionError,
+)
 from .feedback import FeedbackTag, FeedbackTagName
 from .latex import extract_latex, latex_symbols, parse_latex, sanitise_latex, sympy_to_latex
 from .numbers import (
@@ -55,6 +61,7 @@ __all__ = [
     "SymbolSpec",
     "SympyParsingConfig",
     "SyntacticalPattern",
+    "UnknownConventionError",
     "apply_convention",
     "compute_relative_tolerance_from_significant_decimals",
     "convention_parser",

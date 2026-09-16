@@ -14,6 +14,7 @@ from compareexpressions.expression_parsing import (
     SymbolAssumptionError,
     SymbolSpec,
     SympyParsingConfig,
+    UnknownConventionError,
     apply_convention,
     convention_parser,
     parse_expression,
@@ -78,8 +79,10 @@ class TestExpressionParams:
             parse_symbol_assumptions(text)
 
     def test_unknown_convention(self):
-        with pytest.raises(ExpressionParsingError, match="Unknown convention"):
+        with pytest.raises(UnknownConventionError, match="Unknown convention") as info:
             ExpressionParams(convention="sideways")
+        assert info.value.convention == "sideways"
+        assert isinstance(info.value, ExpressionParsingError)
 
     def test_params_are_immutable(self):
         with pytest.raises(AttributeError):

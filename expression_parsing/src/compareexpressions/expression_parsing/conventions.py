@@ -6,8 +6,7 @@ from functools import cache
 
 from compareexpressions.slr_parsing import SLRParser, build_expression_parser, compose, group, infix
 
-from .errors import ExpressionParsingError
-from .params import Convention
+from .params import Convention, validate_convention
 
 
 @cache
@@ -18,14 +17,13 @@ def convention_parser(convention: Convention) -> SLRParser:
     ``/`` (``a/bc`` is ``a/b*c``); with ``"implicit_higher_precedence"`` it
     binds tighter (``a/bc`` is ``a/(bc)``).
     """
+    validate_convention(convention)
     custom_tokens = [(r" *(\*|\+|-| ) *", "SPLIT"), (" */ *", "SOLIDUS")]
     custom_productions = [("E", "*E", group(2, empty=True)), ("E", "EE", group(2, empty=True))]
     if convention == "equal_precedence":
         custom_productions.append(("E", "E/E", infix))
-    elif convention == "implicit_higher_precedence":
-        custom_productions.append(("E", "E/E", compose(infix, group(1, empty=True, delimiters=["(", ")"]))))
     else:
-        raise ExpressionParsingError(f"Unknown convention {convention!r}.")
+        custom_productions.append(("E", "E/E", compose(infix, group(1, empty=True, delimiters=["(", ")"]))))
     return build_expression_parser(
         delimiters=[(("(", ")"), group(1))],
         undefined=("O", "OTHER"),
