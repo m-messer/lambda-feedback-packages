@@ -101,7 +101,7 @@ def quantity_parse(expr: str, variant: str) -> dict[str, Any]:
         "expanded_unit": s(q.expanded_unit),
         "dimension": s(q.dimension),
         "unit_factor": s(q.unit_factor),
-        "messages": [[tag, fb.tag, dict(fb.inputs)] for tag, fb in q.messages],
+        "messages": [{"before": r.before, "marked": r.marked, "after": r.after} for r in q.reverted_units],
     }
 
 

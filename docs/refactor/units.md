@@ -2,7 +2,7 @@
 
 Depends on `slr_parsing`, `expression_parsing` and `sympy`. Released as `0.2.0`; see [`units/CHANGELOG.md`](../../units/CHANGELOG.md) for the migration table and known issues.
 
-**Post-refactor cleanup (0.3.0):** `parse_quantity`/`preprocess_quantity` now require `QuantityParams` (no raw-dict fallback); `strictness="legacy"` is deprecated (still works, warns); `preview_function`/`fix_exponents` moved out to compareExpressions (`app/context/physical_quantity_preview.py`) since previewing a response is a display concern, not unit conversion. See the CHANGELOG for details.
+**Post-refactor cleanup (0.3.0):** `parse_quantity`/`preprocess_quantity` now require `QuantityParams` (no raw-dict fallback); `strictness="legacy"` is deprecated (still works, warns); `preview_function`/`fix_exponents` moved out to compareExpressions (`app/context/physical_quantity_preview.py`) since previewing a response is a display concern, not unit conversion. `FeedbackTag` is gone (mirroring `expression_parsing`'s exception conversion); `PhysicalQuantity.messages` is now `reverted_units: list[RevertedUnit]`, plain `before`/`marked`/`after` facts with no tag name or synthetic id — mapping a fact to feedback text is left entirely to the evaluation function. See the CHANGELOG for details.
 
 ## Modules
 
@@ -12,7 +12,7 @@ Depends on `slr_parsing`, `expression_parsing` and `sympy`. Released as `0.2.0`;
 | `params.py` | `QuantityParams(ExpressionParams)`: `strictness`, `legacy_preprocessing`, `unit_sets`; `from_dict` maps `"legacy"` and `units_string` |
 | `tags.py` | `QuantityTag`: `UNIT`, `NON_UNIT`, `NUMBER`, `REJECTED_UNIT` (was `U`/`V`/`N`/`R`) |
 | `parser.py` | Unit dictionaries, tag handler, natural juxtaposition, `build_quantity_parser` (cached per unit sets and strictness) |
-| `quantity.py` | `PhysicalQuantity`, `parse_quantity`, `REVERTED_UNIT` |
+| `quantity.py` | `PhysicalQuantity`, `parse_quantity`, `RevertedUnit` |
 | `preprocessing.py` | `preprocess_quantity` → `Preprocessed`, `preprocess_legacy` (patterns compiled once, deprecated), `transform_prefixes_to_standard` |
 | `errors.py` | `QuantityError` (a `ValueError`) → `QuantityParseError`, `UnitConversionError` |
 

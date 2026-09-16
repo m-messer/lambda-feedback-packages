@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from dataclasses import dataclass
 from typing import Any
 
 from compareexpressions.expression_parsing import (
@@ -18,7 +19,6 @@ from compareexpressions.slr_parsing import ExprNode, SLRParser
 
 from .data import CONVERSION_TO_BASE_SI, SI_BASE_UNITS, SI_PREFIXES, units_in
 from .errors import QuantityParseError, UnitConversionError
-from .feedback import FeedbackTag
 from .params import QuantityParams
 from .parser import build_quantity_parser
 from .tags import QuantityTag
@@ -26,8 +26,19 @@ from .tags import QuantityTag
 _BASE_UNIT_NAMES = frozenset(unit.name for unit in SI_BASE_UNITS)
 _BASE_UNIT_DIMENSIONS = [(unit.name, unit.dimension) for unit in SI_BASE_UNITS]
 
-REVERTED_UNIT = "REVERTED_UNIT"
-"""Feedback tag for unit-like text read as part of the value (inputs: ``before``, ``marked``, ``after``)."""
+
+@dataclass(frozen=True)
+class RevertedUnit:
+    """Unit-like text found inside a value, restored to what was typed.
+
+    ``before``, ``marked`` and ``after`` are the text surrounding and
+    covering the unit-like span, e.g. for ``"2 kg + 3"``:
+    ``before="2 ", marked="kg", after=" + 3"``.
+    """
+
+    before: str
+    marked: str
+    after: str
 
 
 def _unsplittable_names(params: QuantityParams, all_forms: bool) -> list[str]:
@@ -50,8 +61,8 @@ class PhysicalQuantity:
 
     Attributes:
         value, unit: the value and unit subtrees (either may be ``None``).
-        messages: ``(message_id, FeedbackTag)`` pairs, e.g. ``REVERTED_UNIT``
-            for unit-like text read as part of the value.
+        reverted_units: :class:`RevertedUnit` facts for unit-like text read
+            as part of the value.
         value_latex, unit_latex, latex: LaTeX for the value, the unit, and both.
         standard_value: the value with the unit's factor applied (SymPy).
         standard_unit: the unit in SI base units without its factor.
@@ -72,7 +83,7 @@ class PhysicalQuantity:
             unsplittable_symbols=unsplittable,
             symbol_assumptions=tuple((name, "positive") for name in unsplittable),
         )
-        self.messages: list[tuple[str, FeedbackTag]] = []
+        self.reverted_units: list[RevertedUnit] = []
         self.value: ExprNode | None = None
         self.unit: ExprNode | None = None
 
@@ -149,13 +160,12 @@ class PhysicalQuantity:
         if node.label != "GROUP":
             node.content = node.original[node.start : node.end + 1]
         if node.label == "UNIT" or QuantityTag.UNIT in node.tags:
-            marked = {
-                "before": node.original[: node.start],
-                "marked": node.content_string(),
-                "after": node.original[node.end + 1 :],
-            }
-            self.messages.append(
-                (f"{self.name}_{REVERTED_UNIT}_{len(self.messages)}", FeedbackTag(REVERTED_UNIT, marked))
+            self.reverted_units.append(
+                RevertedUnit(
+                    before=node.original[: node.start],
+                    marked=node.content_string(),
+                    after=node.original[node.end + 1 :],
+                )
             )
         return ["", ""]
 

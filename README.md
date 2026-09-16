@@ -92,9 +92,14 @@ dependencies. The published metadata keeps plain version requirements.
 
 ## Feedback decoupling
 
-The parsing/units code does not resolve feedback text itself. Functions surface
-an `expression_parsing.FeedbackTag(tag, inputs)` (tag names in
-`FeedbackTagName`; units adds `REVERTED_UNIT`), and consumers own the
-`tag -> string` mapping. `criteria.feedback` turns reached criteria into
-feedback on a result object such as `lf_toolkit.evaluation.Result`.
+The parsing/units code does not resolve feedback text itself, and raises typed
+exceptions (`expression_parsing.ExpressionParsingError`,
+`units.QuantityError`, both `ValueError`s with structured fields such as
+`.expression`) rather than returning feedback tags for failures. Non-fatal
+diagnostics stay as plain structured facts instead: `units.PhysicalQuantity`
+exposes unit-like text found inside a value as
+`reverted_units: list[RevertedUnit]` (`before`/`marked`/`after`). Consumers
+decide entirely on their own whether/how to surface any of this as feedback.
+`criteria.feedback` turns reached criteria into feedback on a result object
+such as `lf_toolkit.evaluation.Result`.
 See [`NOTES.md`](NOTES.md).

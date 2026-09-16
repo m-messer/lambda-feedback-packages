@@ -9,7 +9,7 @@ Further tidy-up after the 0.2.0 extraction: this package is unit conversion only
 - `parse_quantity` and `preprocess_quantity` now take `QuantityParams` only; the `Mapping[str, Any]` (raw dict) fallback is gone, along with the `as_quantity_params` helper. Convert evaluation-function parameters explicitly at the call site with `QuantityParams.from_dict(evaluation_params)`.
 - `preview_function` and `fix_exponents` have moved out of this package entirely, to compareExpressions (`app/context/physical_quantity_preview.py`): building a LaTeX/SymPy preview string is an app-layer display concern, not unit conversion. Import them from there instead of `compareexpressions.units`.
 - `preprocess_quantity` now returns a plain `str` (`expression_parsing.preprocess_expression`, which it matches the shape of, no longer returns `Preprocessed`).
-- `FeedbackTag` (used by `PhysicalQuantity.messages` for `REVERTED_UNIT`) is now defined locally in this package (`compareexpressions.units.FeedbackTag`) rather than imported from `expression_parsing`, which no longer exposes it.
+- `FeedbackTag` is removed, matching `expression_parsing`'s move from feedback tags to typed exceptions: mapping a parsing fact to feedback text is an app-layer concern, not this package's. `PhysicalQuantity.messages` (`(message_id, FeedbackTag)` pairs) is replaced by `PhysicalQuantity.reverted_units: list[RevertedUnit]` — plain `before`/`marked`/`after` facts about unit-like text found inside a value, with no tag name or synthetic id. This isn't a raised exception (unlike `expression_parsing`'s failures): it's non-fatal and can fire multiple times per response, so it stays a collected list.
 - `PhysicalQuantity.value_latex` no longer calls `expression_parsing.preview_function` (removed): it builds the LaTeX directly from `preprocess_expression` + `parse_expression` + `sympy_to_latex`, catching `BracketNotationError`/`AbsoluteValueNotationError` to preview with the best-guess rewrite rather than failing outright (matching the old behaviour of ignoring preprocessing feedback).
 - Requires `compareexpressions-expression-parsing` 0.3.0 or later.
 
@@ -59,5 +59,5 @@ Modules: `data` (was `unit_system_conversions`), `params`, `tags`, `parser`, `qu
 
 ### Known issues (unchanged from v0.1)
 
-- `REVERTED_UNIT` messages are emitted for every node carrying the unit tag, so a group that contains a unit is reported as well as the unit itself. The group's message positions come from synthetic tokens, so its before/marked/after text is garbled (e.g. for `2 kg + 3`). The message for the unit itself is correct.
+- `reverted_units` entries are emitted for every node carrying the unit tag, so a group that contains a unit is reported as well as the unit itself. The group's positions come from synthetic tokens, so its before/marked/after text is garbled (e.g. for `2 kg + 3`). The entry for the unit itself is correct.
 - Units' LaTeX preview removes all whitespace, so a value and unit must be separated with `~` (as MathLive does): `9.81 \mathrm{m}` reads as `9.81m`.

@@ -6,15 +6,14 @@ from sympy import Rational
 from compareexpressions.expression_parsing import ExpressionParsingError
 from compareexpressions.units import (
     CONVERSION_TO_BASE_SI,
-    REVERTED_UNIT,
     SI_BASE_UNITS,
     SI_PREFIXES,
     UNIT_SETS,
-    FeedbackTag,
     QuantityError,
     QuantityParams,
     QuantityParseError,
     QuantityTag,
+    RevertedUnit,
     build_quantity_parser,
     parse_quantity,
     preprocess_quantity,
@@ -104,11 +103,9 @@ class TestPhysicalQuantity:
 
     def test_reverted_unit_messages(self):
         quantity = parse_quantity("2 kg + 3", QuantityParams())
-        assert {feedback.tag for _, feedback in quantity.messages} == {REVERTED_UNIT}
+        assert all(isinstance(reverted, RevertedUnit) for reverted in quantity.reverted_units)
         # Known quirk (as in v0.1): the enclosing group is reported too, with garbled positions.
-        message_id, feedback = quantity.messages[-1]
-        assert message_id == f"response_REVERTED_UNIT_{len(quantity.messages) - 1}"
-        assert feedback == FeedbackTag(REVERTED_UNIT, {"before": "2 ", "marked": "kg", "after": " + 3"})
+        assert quantity.reverted_units[-1] == RevertedUnit(before="2 ", marked="kg", after=" + 3")
 
     def test_strict_mode_rejects_natural_spellings(self):
         assert parse_quantity("2 metres", QuantityParams(strictness="strict")).unit is None
