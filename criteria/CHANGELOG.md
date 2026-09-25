@@ -24,18 +24,18 @@ Removed (unused): `CriteriaGraph(identifier, entry_evaluations=)` (never read), 
 
 Errors: graph misuse raises `CriteriaGraphError` (a `ValueError`) instead of bare `Exception`; `CriteriaError` is the common base.
 
-Modules: `grammar` (was `parsing`), `nodes`, `graph`, `tree`, `render`, `feedback`, `errors`. Fully type-annotated (`py.typed`).
+Modules: `grammar` (was `parsing`), `nodes`, `graph`, `tree`, `render`, `errors`. Fully type-annotated (`py.typed`).
 
 ### Replaces `compareexpressions-evaluation-result`
 
-The `evaluation_result` package is retired. Use `lf_toolkit.evaluation.Result` from [toolkit-python](https://github.com/lambda-feedback/toolkit-python) together with the new `compareexpressions.criteria.feedback` helpers. These type against a `ResultLike` protocol (`tags` + `add_feedback(tag, text)`), so this package doesn't depend on lf_toolkit.
+The `evaluation_result` package is retired. Use `lf_toolkit.evaluation.Result` from [toolkit-python](https://github.com/lambda-feedback/toolkit-python) together with the new `CriteriaGraph` feedback methods: `resolve_feedback(reached, custom_feedback)` gives the `(tag, text)` pairs, `export_feedback(result, reached, custom_feedback)` adds them to a result, and the staticmethod `CriteriaGraph.test_data(graphs)` builds the test-data payload. `export_feedback` types against a `ResultLike` protocol (`tags` + `add_feedback(tag, text)`), so this package doesn't depend on lf_toolkit. To export feedback somewhere else, subclass `CriteriaGraph` and override `export_feedback`.
 
 | `EvaluationResult` (v0.1) | Replacement |
 |---|---|
 | `EvaluationResult()` | `lf_toolkit.evaluation.Result()` |
 | `result.add_feedback((tag, text))` | `result.add_feedback(tag, text)` |
-| `result.add_feedback_from_tags(tags, graph, custom_feedback)` | `criteria.feedback.add_feedback_from_tags(result, tags, graph, custom_feedback)` |
-| `result.add_criteria_graph(name, graph)` + `serialise(include_test_data=True)` | `{**result.to_dict(include_test_data=True), **criteria.feedback.criteria_test_data({name: graph, ...})}` |
+| `result.add_feedback_from_tags(tags, graph, custom_feedback)` | `graph.export_feedback(result, tags, custom_feedback)` |
+| `result.add_criteria_graph(name, graph)` + `serialise(include_test_data=True)` | `{**result.to_dict(include_test_data=True), **CriteriaGraph.test_data({name: graph, ...})}` |
 | `result.serialise()` / `result[key]` | `result.to_dict()` |
 | `result.get_tags()` | `result.tags` |
 | `result.get_feedback(tag)` (returned indices) | `result.get_feedback(tag)` (returns the texts) |
@@ -43,7 +43,7 @@ The `evaluation_result` package is retired. Use `lf_toolkit.evaluation.Result` f
 
 Behaviour differences to be aware of when adopting:
 
-- **Blank feedback.** `EvaluationResult` recorded the tag of a criterion whose feedback was `None` or blank but left it out of the feedback string. `add_feedback_from_tags` keeps the tag by adding `""`, but lf_toolkit@ae52fa6's `Result.feedback` joins every entry with `<br>`, blanks included, so the string can contain empty segments until the [proposed upstream fix](../docs/refactor/upstream-lf-toolkit.md) lands.
+- **Blank feedback.** `EvaluationResult` recorded the tag of a criterion whose feedback was `None` or blank but left it out of the feedback string. `export_feedback` keeps the tag by adding `""`, but lf_toolkit@ae52fa6's `Result.feedback` joins every entry with `<br>`, blanks included, so the string can contain empty segments until the [proposed upstream fix](../docs/refactor/upstream-lf-toolkit.md) lands.
 - **Tags in `to_dict()`.** lf_toolkit only includes `tags` with `include_test_data=True`; `EvaluationResult.serialise()` always did.
 - **Stripping.** Feedback text is stripped when resolved (it used to be stripped when serialised), so the stored texts are already trimmed.
 

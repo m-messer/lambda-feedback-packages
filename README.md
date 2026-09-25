@@ -38,7 +38,7 @@ quantity = parse_quantity("9.81 m/s^2", evaluation_params)  # value, unit, dimen
 
 `evaluation_result` has been retired: use `lf_toolkit.evaluation.Result`
 from [toolkit-python](https://github.com/lambda-feedback/toolkit-python), with
-the helpers in `compareexpressions.criteria.feedback` for criteria feedback.
+`CriteriaGraph.export_feedback` for criteria feedback.
 
 Each package uses a `src/` layout: `units/src/compareexpressions/units/`.
 There is deliberately no `compareexpressions/__init__.py`; the namespace is
@@ -100,6 +100,7 @@ diagnostics stay as plain structured facts instead: `units.PhysicalQuantity`
 exposes unit-like text found inside a value as
 `reverted_units: list[RevertedUnit]` (`before`/`marked`/`after`). Consumers
 decide entirely on their own whether/how to surface any of this as feedback.
-`criteria.feedback` turns reached criteria into feedback on a result object
-such as `lf_toolkit.evaluation.Result`.
+`CriteriaGraph.export_feedback` turns reached criteria into feedback on a
+result object such as `lf_toolkit.evaluation.Result`; subclass the graph and
+override it to export feedback differently.
 See [`NOTES.md`](NOTES.md).

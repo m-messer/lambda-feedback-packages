@@ -150,7 +150,8 @@ decisions are:
   Poetry, with a root dev environment.
 - **Retire `evaluation_result`** in favour of `lf_toolkit.evaluation.Result`
   from [toolkit-python](https://github.com/lambda-feedback/toolkit-python).
-  Its criteria-specific parts are now `criteria.feedback`. For now the
+  Its criteria-specific parts are now `CriteriaGraph` methods
+  (`resolve_feedback`, `export_feedback`, `test_data`). For now the
   packages only *type* against lf_toolkit (a `ResultLike` protocol and
   structurally identical TypedDicts), because lf_toolkit@ae52fa6 installs
   ~237 MB of dev tools it declares as runtime requirements. It is a dev-only

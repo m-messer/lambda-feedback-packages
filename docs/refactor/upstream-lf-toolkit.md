@@ -72,8 +72,8 @@ def feedback(self) -> str:
     return "<br>".join(text.strip() for texts in self._feedback.values() for text in texts if text and text.strip())
 ```
 
-The `criteria.feedback.add_feedback_from_tags` helper already adds blank feedback as `""`, so once this lands the adopted output matches `EvaluationResult`'s.
+`CriteriaGraph.export_feedback` already adds blank feedback as `""`, so once this lands the adopted output matches `EvaluationResult`'s.
 
 ## 3. (Minor) No home for extra test data
 
-`Result` uses `__slots__`, so consumers can't attach extra test data such as compareExpressions' criteria-graph JSON and mermaid. `criteria.feedback.criteria_test_data()` returns that payload for the consumer to merge into `to_dict(include_test_data=True)`. An `extra_test_data: dict` slot included by `to_dict(include_test_data=True)` would remove that step.
+`Result` uses `__slots__`, so consumers can't attach extra test data such as compareExpressions' criteria-graph JSON and mermaid. `CriteriaGraph.test_data(graphs)` returns that payload for the consumer to merge into `to_dict(include_test_data=True)`. An `extra_test_data: dict` slot included by `to_dict(include_test_data=True)` would remove that step.

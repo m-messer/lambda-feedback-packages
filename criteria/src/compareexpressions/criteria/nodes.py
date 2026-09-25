@@ -9,13 +9,25 @@ from __future__ import annotations
 
 from collections.abc import Callable, Mapping
 from dataclasses import dataclass, field
-from typing import Any, TypeAlias
+from typing import Any, Protocol, TypeAlias
 
-Evaluate: TypeAlias = Callable[[Any], Mapping[str, Mapping[str, Any] | None]]
+ReachedCriteria: TypeAlias = Mapping[str, Mapping[str, Any] | None]
+"""``{criterion_label: feedback_inputs_or_None}`` for the criteria that hold (or were reached)."""
+
+Evaluate: TypeAlias = Callable[[Any], ReachedCriteria]
 """``evaluate(response) -> {criterion_label: feedback_inputs_or_None}`` for the criteria that hold."""
 
 FeedbackStringGenerator: TypeAlias = Callable[[Mapping[str, Any]], str | None]
 """Renders a criterion's feedback text from the inputs its evaluation reported."""
+
+
+class ResultLike(Protocol):
+    """The part of a result object ``CriteriaGraph.export_feedback`` needs (``lf_toolkit.evaluation.Result`` fits)."""
+
+    @property
+    def tags(self) -> list[str] | None: ...
+
+    def add_feedback(self, tag: str, feedback: str) -> None: ...
 
 
 def no_feedback(inputs: Mapping[str, Any]) -> None:

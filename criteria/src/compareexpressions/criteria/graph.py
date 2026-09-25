@@ -14,6 +14,8 @@ from .nodes import (
     FeedbackStringGenerator,
     Node,
     OutputNode,
+    ReachedCriteria,
+    ResultLike,
     no_feedback,
 )
 from .render import graph_to_json, graph_to_mermaid
@@ -25,7 +27,11 @@ class CriteriaGraph:
 
     Evaluations point to criteria; criteria point to further evaluations or
     to outputs. ``generate_feedback`` walks the graph from the evaluations
-    leading to a main criterion and collects every criterion reached.
+    leading to a main criterion and collects every criterion reached;
+    ``export_feedback`` turns those into feedback on a result object.
+
+    To export feedback differently, subclass and override ``export_feedback``
+    (building on ``resolve_feedback`` for the text).
     """
 
     END: ClassVar[OutputNode] = OutputNode("END", "END", "Evaluation completed.")
@@ -224,7 +230,8 @@ class CriteriaGraph:
         """Run the evaluations reachable from ``main_criteria``'s starting evaluations.
 
         Returns every criterion reached, mapped to the inputs for its feedback
-        text, in the order reached (breadth-first, in attachment order).
+        text, in the order reached (breadth-first, in attachment order); pass
+        it to ``export_feedback`` or ``resolve_feedback`` for the text.
         Evaluations with a ``replacement`` are skipped in favour of it.
         """
         queue = self.starting_evaluations(main_criteria)
@@ -250,6 +257,65 @@ class CriteriaGraph:
             for criterion in results:
                 queue += [edge.target.label for edge in self.criteria[criterion].outgoing]
         return feedback
+
+    # ------------------------------------------------------------------
+    # Feedback
+    # ------------------------------------------------------------------
+
+    def resolve_feedback(
+        self,
+        reached: ReachedCriteria,
+        custom_feedback: Mapping[str, str] | None = None,
+    ) -> list[tuple[str, str]]:
+        """Feedback text for each reached criterion, as ``(tag, text)`` pairs.
+
+        ``reached`` maps criterion labels to the inputs for their feedback
+        string generators (as returned by ``generate_feedback``).
+        ``custom_feedback`` overrides the text for given tags. Text is stripped,
+        and a generator returning ``None`` gives ``""``: the tag still counts as
+        reached, it just has nothing to say.
+        """
+        custom_feedback = custom_feedback or {}
+        resolved = []
+        for tag, inputs in reached.items():
+            if tag in custom_feedback:
+                text: str | None = custom_feedback[tag]
+            else:
+                text = self.criteria[tag].feedback_string_generator(inputs or {})
+            resolved.append((tag, (text or "").strip()))
+        return resolved
+
+    def export_feedback(
+        self,
+        result: ResultLike,
+        reached: ReachedCriteria,
+        custom_feedback: Mapping[str, str] | None = None,
+    ) -> None:
+        """Add the feedback for each reached criterion to ``result``.
+
+        Tags already on the result are skipped, so exporting several graphs'
+        feedback into one result keeps the first text for a shared tag. Blank
+        feedback is added as ``""`` so that the tag is still recorded.
+
+        Override in a subclass to export feedback differently.
+        """
+        existing = set(result.tags or ())
+        for tag, text in self.resolve_feedback(reached, custom_feedback):
+            if tag not in existing:
+                result.add_feedback(tag, text)
+                existing.add(tag)
+
+    @staticmethod
+    def test_data(graphs: Mapping[str, CriteriaGraph]) -> dict[str, dict[str, str]]:
+        """The criteria-graph payload for a result's test data (JSON and mermaid per graph).
+
+        Merge it into the serialised result when test data is requested, e.g.
+        ``{**result.to_dict(include_test_data=True), **CriteriaGraph.test_data(graphs)}``.
+        """
+        return {
+            "criteria_graphs": {name: graph.to_json() for name, graph in graphs.items()},
+            "criteria_graphs_vis": {name: graph.to_mermaid() for name, graph in graphs.items()},
+        }
 
     # ------------------------------------------------------------------
     # Rendering

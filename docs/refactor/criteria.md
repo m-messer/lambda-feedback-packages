@@ -7,16 +7,15 @@ Depends on `slr_parsing`. Released as `0.2.0`; see [`criteria/CHANGELOG.md`](../
 | Module | Contents |
 |---|---|
 | `grammar.py` (was `parsing.py`) | `TOKENS` / `PRODUCTIONS` as immutable tuples; `build_criteria_parser(reserved_expressions)` |
-| `nodes.py` | `Node`, `EvaluationNode`, `CriterionNode`, `OutputNode` (dataclasses), `Edge` |
-| `graph.py` | `CriteriaGraph` |
+| `nodes.py` | `Node`, `EvaluationNode`, `CriterionNode`, `OutputNode` (dataclasses), `Edge`; `ReachedCriteria`, `ResultLike` |
+| `graph.py` | `CriteriaGraph`, including the feedback methods `resolve_feedback`, `export_feedback` (override to export differently) and `test_data` |
 | `tree.py` | `CriteriaTree`, `build_tree` |
 | `render.py` | JSON and mermaid renderings, style constants |
-| `feedback.py` | `ResultLike`, `resolve_feedback`, `add_feedback_from_tags`, `criteria_test_data` |
 | `errors.py` | `CriteriaError` → `CriteriaGraphError`, `CriteriaEvaluationError` |
 
 **Deviations from the plan:**
-- **lf_toolkit is not a runtime dependency.** lf_toolkit@ae52fa6 declares its dev tools as runtime requirements (80 packages / 237 MB), so `feedback.py` types against a `ResultLike` protocol. lf_toolkit is a dev-only dependency, and `test_feedback.py` checks compatibility with the real `Result`. Upstream fixes are drafted in [upstream-lf-toolkit.md](upstream-lf-toolkit.md).
-- **Blank feedback** (decided in Phase 2): `add_feedback_from_tags` records every reached tag, adding `""` for `None`/blank feedback, which keeps the tags compareExpressions' tests rely on. The resulting empty `<br>` segments in lf_toolkit's `Result.feedback` are the subject of the upstream fix.
+- **lf_toolkit is not a runtime dependency.** lf_toolkit@ae52fa6 declares its dev tools as runtime requirements (80 packages / 237 MB), so `CriteriaGraph.export_feedback` types against a `ResultLike` protocol. lf_toolkit is a dev-only dependency, and `test_feedback.py` checks compatibility with the real `Result`. Upstream fixes are drafted in [upstream-lf-toolkit.md](upstream-lf-toolkit.md).
+- **Blank feedback** (decided in Phase 2): `export_feedback` records every reached tag, adding `""` for `None`/blank feedback, which keeps the tags compareExpressions' tests rely on. The resulting empty `<br>` segments in lf_toolkit's `Result.feedback` are the subject of the upstream fix.
 - **`CriteriaGraph.END` is kept.** The plan listed it as unused, but compareExpressions uses it (`graph.add_node(CriteriaGraph.END)`, `evaluation.replacement = CriteriaGraph.END`). `RETURN` was the unused one.
 - **Productions are kept as an explicit list** rather than generated from an `OTHER`/`RESERVED` product: 26 literal lines are clearer than the generator, and they make the precedence order obvious.
 
@@ -35,7 +34,7 @@ Depends on `slr_parsing`. Released as `0.2.0`; see [`criteria/CHANGELOG.md`](../
 
 ### Retire `evaluation_result`
 
-- [x] `criteria.feedback` helpers, tested against a recording fake and the real lf_toolkit `Result`.
+- [x] Feedback helpers (now `CriteriaGraph` methods), tested against a recording fake and the real lf_toolkit `Result`.
 - [x] Package deleted; removed from the dev env, the test runner, the configs and the README.
 - [x] Migration notes in `criteria/CHANGELOG.md`, including the behaviour differences (blank feedback, `tags` only in test data, stripping).
 
