@@ -5,7 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any
 
-from compareexpressions.expression_parsing import (
+from lambdafeedback.expression_parsing import (
     AbsoluteValueNotationError,
     BracketNotationError,
     SympyParsingConfig,
@@ -15,7 +15,7 @@ from compareexpressions.expression_parsing import (
     substitute,
     sympy_to_latex,
 )
-from compareexpressions.slr_parsing import ExprNode, SLRParser
+from lambdafeedback.slr_parsing import ExprNode, SLRParser
 
 from .data import CONVERSION_TO_BASE_SI, SI_BASE_UNITS, SI_PREFIXES, units_in
 from .errors import QuantityParseError, UnitConversionError

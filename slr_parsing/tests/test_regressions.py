@@ -2,7 +2,7 @@
 
 import pytest
 
-from compareexpressions.slr_parsing import (
+from lambdafeedback.slr_parsing import (
     ExprNode,
     SLRParser,
     Token,

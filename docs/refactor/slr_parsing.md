@@ -1,4 +1,4 @@
-# Phase 1: `compareexpressions.slr_parsing`: done
+# Phase 1: `lambdafeedback.slr_parsing`: done
 
 No dependencies. The single `parser.py` (845 lines) is now 7 modules. Released as `0.2.0`; see [`slr_parsing/CHANGELOG.md`](../../slr_parsing/CHANGELOG.md) for the migration table.
 

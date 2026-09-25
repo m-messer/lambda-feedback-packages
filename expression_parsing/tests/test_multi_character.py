@@ -1,6 +1,6 @@
 import pytest
 
-from compareexpressions.expression_parsing import ExpressionParams, SympyParsingConfig, parse_expression
+from lambdafeedback.expression_parsing import ExpressionParams, SympyParsingConfig, parse_expression
 
 
 class TestMultiCharImplicitMultiHigherPrecedenceIntegration:

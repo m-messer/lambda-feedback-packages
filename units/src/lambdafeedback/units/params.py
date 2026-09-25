@@ -7,7 +7,7 @@ from collections.abc import Mapping
 from dataclasses import dataclass
 from typing import Any, Literal, Self, get_args
 
-from compareexpressions.expression_parsing import ExpressionParams, ExpressionParsingError
+from lambdafeedback.expression_parsing import ExpressionParams, ExpressionParsingError
 
 from .data import UNIT_SETS
 
@@ -24,7 +24,7 @@ class QuantityParams(ExpressionParams):
     legacy_preprocessing: bool = False
     """Deprecated: rewrite the response the way the old ``legacy`` strictness did (natural otherwise)."""
     unit_sets: frozenset[str] = frozenset(UNIT_SETS)
-    """Names from :data:`~compareexpressions.units.data.UNIT_SETS` whose units are recognised."""
+    """Names from :data:`~lambdafeedback.units.data.UNIT_SETS` whose units are recognised."""
 
     def __post_init__(self) -> None:
         super().__post_init__()

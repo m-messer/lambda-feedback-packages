@@ -3,7 +3,7 @@
 Build a parser from token specifications and productions with
 :class:`SLRParser` (or :func:`build_expression_parser` for the common
 operand/operator/delimiter shape), then ``parser.parse(parser.scan(text))``.
-See :mod:`compareexpressions.slr_parsing.grammar` for the grammar format.
+See :mod:`lambdafeedback.slr_parsing.grammar` for the grammar format.
 
 Extracted from compareExpressions (app/utility/slr_parsing_utilities.py);
 depends only on the standard library.

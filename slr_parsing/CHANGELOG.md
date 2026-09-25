@@ -1,14 +1,14 @@
-# Changelog: compareexpressions-slr-parsing
+# Changelog: lambdafeedback-slr-parsing
 
 ## 0.2.0 (unreleased)
 
-The first release after the extraction refactor. The import path is now `compareexpressions.slr_parsing` (was `slr_parsing`).
+The first release after the extraction refactor. The import path is now `lambdafeedback.slr_parsing` (was `slr_parsing`).
 
 ### Renamed
 
 | v0.1 | 0.2.0 |
 |---|---|
-| `slr_parsing` (import) | `compareexpressions.slr_parsing` |
+| `slr_parsing` (import) | `lambdafeedback.slr_parsing` |
 | `SLR_Parser` | `SLRParser` |
 | `SLR_expression_parser(..., costum_tokens=, costum_productions=)` | `build_expression_parser(..., custom_tokens=, custom_productions=)` |
 | `tag` | `add_tag` |
@@ -20,7 +20,7 @@ The first release after the extraction refactor. The import path is now `compare
 ### Changed
 
 - **Errors:** bare `Exception`s are replaced by `GrammarError` (invalid grammar), `ScanError` (text no token matches) and `ParseError` (input doesn't match the grammar). All derive from `SLRError` and `ValueError`. `ParseError`'s message is a one-line summary ("Unexpected end of input.", "Unexpected OP '+' at position 3."); the full parser-state dump that used to be the message is available from `ParseError.details()`, with the parts as attributes. An invalid `ExprNode` child raises `TypeError`.
-- **Logging instead of printing:** `parse()` no longer takes `verbose`; set the `compareexpressions.slr_parsing.parser` logger to DEBUG to trace shifts and reductions. Unreachable grammar states and reductions are logged as a WARNING instead of printed, and the start state is no longer falsely reported.
+- **Logging instead of printing:** `parse()` no longer takes `verbose`; set the `lambdafeedback.slr_parsing.parser` logger to DEBUG to trace shifts and reductions. Unreachable grammar states and reductions are logged as a WARNING instead of printed, and the start state is no longer falsely reported.
 - `build_expression_parser` drops the unused `group_node` parameter; sequence defaults are tuples instead of shared mutable lists.
 - `SLRParser` keeps its construction internals private. The public surface is `scan`, `parse`, `parsing_action`, `parsing_table`, `states` (now a list of kernel item tuples, was a dict of kernel → closure), `productions`, `token_list`, `start_token`/`end_token`/`null_token`, `error_handler`, `tag_handler` and the debug helpers `state_string` and `parsing_table_to_string`. `state_string_list` is removed.
 - Error handlers are normalised to `ErrorHandler(condition, action)` named tuples; plain 2-tuples are still accepted.

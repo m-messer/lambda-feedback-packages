@@ -4,7 +4,7 @@ import json
 
 import pytest
 
-from compareexpressions.criteria import CriteriaGraph
+from lambdafeedback.criteria import CriteriaGraph
 
 
 class RecordingResult:

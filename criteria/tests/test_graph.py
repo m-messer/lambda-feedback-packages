@@ -4,7 +4,7 @@ import json
 
 import pytest
 
-from compareexpressions.criteria import (
+from lambdafeedback.criteria import (
     CriteriaGraph,
     CriteriaGraphError,
     CriterionNode,

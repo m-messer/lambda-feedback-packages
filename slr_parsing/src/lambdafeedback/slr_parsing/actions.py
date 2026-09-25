@@ -1,7 +1,7 @@
 """Reduction actions: build the output tree when a production is reduced.
 
 Every action has the signature ``action(production, output, tag_handler) ->
-output`` (see :data:`~compareexpressions.slr_parsing.grammar.Action`); the
+output`` (see :data:`~lambdafeedback.slr_parsing.grammar.Action`); the
 functions taking parameters (``group``, ``operate``, ...) return one.
 """
 

@@ -3,8 +3,8 @@
 import pytest
 from sympy import Rational
 
-from compareexpressions.expression_parsing import ExpressionParsingError
-from compareexpressions.units import (
+from lambdafeedback.expression_parsing import ExpressionParsingError
+from lambdafeedback.units import (
     CONVERSION_TO_BASE_SI,
     SI_BASE_UNITS,
     SI_PREFIXES,
@@ -40,7 +40,7 @@ class TestQuantityParams:
         assert params.complex_numbers is True
 
     def test_it_is_expression_params(self):
-        from compareexpressions.expression_parsing import ExpressionParams
+        from lambdafeedback.expression_parsing import ExpressionParams
 
         assert isinstance(QuantityParams(), ExpressionParams)
         assert isinstance(QuantityParams().replace(simplify=True), QuantityParams)

@@ -1,14 +1,14 @@
-# Changelog: compareexpressions-criteria
+# Changelog: lambdafeedback-criteria
 
 ## 0.2.0 (unreleased)
 
-The first release after the extraction refactor. The import path is now `compareexpressions.criteria` (was `criteria`).
+The first release after the extraction refactor. The import path is now `lambdafeedback.criteria` (was `criteria`).
 
 ### Renamed and restructured
 
 | v0.1 | 0.2.0 |
 |---|---|
-| `criteria` (import) | `compareexpressions.criteria` |
+| `criteria` (import) | `lambdafeedback.criteria` |
 | `generate_criteria_parser(reserved, token_list=, productions=)` | `build_criteria_parser(reserved, token_list=, productions=)`; the defaults are the tuples `grammar.TOKENS` / `grammar.PRODUCTIONS` |
 | `criteria.parsing.base_token_list` / `base_productions` | `criteria.grammar.TOKENS` / `PRODUCTIONS` |
 | `CriteriaGraph.Evaluation` / `.Criterion` / `.Output` / `.Edge` / `.Node` | `EvaluationNode` / `CriterionNode` / `OutputNode` / `Edge` / `Node` (module-level dataclasses) |

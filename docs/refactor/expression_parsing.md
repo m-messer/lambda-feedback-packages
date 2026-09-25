@@ -1,4 +1,4 @@
-# Phase 3: `compareexpressions.expression_parsing`: done
+# Phase 3: `lambdafeedback.expression_parsing`: done
 
 Depends on `slr_parsing`, `sympy` and `latex2sympy2` (the PyPI release; see below). Released as `0.2.0`; see [`expression_parsing/CHANGELOG.md`](../../expression_parsing/CHANGELOG.md) for the migration table.
 

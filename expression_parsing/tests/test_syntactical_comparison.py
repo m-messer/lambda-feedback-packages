@@ -1,6 +1,6 @@
 import pytest
 
-from compareexpressions.expression_parsing import generate_arbitrary_number_pattern_matcher
+from lambdafeedback.expression_parsing import generate_arbitrary_number_pattern_matcher
 
 
 class TestGenerateArbitraryNumberPatternMatcher:

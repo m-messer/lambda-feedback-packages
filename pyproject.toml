@@ -3,7 +3,7 @@
 # develop mode plus the lint/type/test tooling.
 
 [project]
-name = "compareexpressions-packages"
+name = "lambdafeedback-packages"
 # <3.13: latex2sympy2 pins antlr4-python3-runtime 4.7.2, which imports the
 # `typing.io` module removed in Python 3.13.
 requires-python = ">=3.11,<3.13"
@@ -12,10 +12,10 @@ requires-python = ">=3.11,<3.13"
 package-mode = false
 
 [tool.poetry.group.dev.dependencies]
-compareexpressions-slr-parsing = { path = "slr_parsing", develop = true }
-compareexpressions-criteria = { path = "criteria", develop = true }
-compareexpressions-expression-parsing = { path = "expression_parsing", develop = true }
-compareexpressions-units = { path = "units", develop = true }
+lambdafeedback-slr-parsing = { path = "slr_parsing", develop = true }
+lambdafeedback-criteria = { path = "criteria", develop = true }
+lambdafeedback-expression-parsing = { path = "expression_parsing", develop = true }
+lambdafeedback-units = { path = "units", develop = true }
 # Dev-only: tests check the criteria feedback helpers against the real
 # lf_toolkit Result. Not a runtime dependency until lf_toolkit stops shipping
 # its dev tools as runtime requirements (docs/refactor/upstream-lf-toolkit.md).
@@ -29,7 +29,7 @@ mypy = "^2.3"
 filterwarnings = [
     "error::SyntaxWarning",
     # Our own deprecations are errors; third-party ones (e.g. antlr's typing.io) are not.
-    "error::DeprecationWarning:compareexpressions",
+    "error::DeprecationWarning:lambdafeedback",
 ]
 
 [tool.ruff]
@@ -57,7 +57,7 @@ ignore = ["RUF001", "RUF002", "RUF003"]
 "*/tests/*" = ["E501", "N802"]
 
 [tool.ruff.lint.isort]
-known-first-party = ["compareexpressions"]
+known-first-party = ["lambdafeedback"]
 
 [tool.mypy]
 python_version = "3.11"
@@ -80,10 +80,10 @@ warn_unused_ignores = true
 # Strict checking, spelled out: `strict` itself is global-only.
 [[tool.mypy.overrides]]
 module = [
-    "compareexpressions.slr_parsing",
-    "compareexpressions.slr_parsing.*",
-    "compareexpressions.criteria",
-    "compareexpressions.criteria.*",
+    "lambdafeedback.slr_parsing",
+    "lambdafeedback.slr_parsing.*",
+    "lambdafeedback.criteria",
+    "lambdafeedback.criteria.*",
 ]
 disallow_untyped_defs = true
 disallow_incomplete_defs = true
@@ -101,10 +101,10 @@ extra_checks = true
 # definitions and check their bodies.
 [[tool.mypy.overrides]]
 module = [
-    "compareexpressions.expression_parsing",
-    "compareexpressions.expression_parsing.*",
-    "compareexpressions.units",
-    "compareexpressions.units.*",
+    "lambdafeedback.expression_parsing",
+    "lambdafeedback.expression_parsing.*",
+    "lambdafeedback.units",
+    "lambdafeedback.units.*",
 ]
 disallow_untyped_defs = true
 disallow_incomplete_defs = true

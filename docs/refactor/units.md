@@ -1,4 +1,4 @@
-# Phase 4: `compareexpressions.units`: done
+# Phase 4: `lambdafeedback.units`: done
 
 Depends on `slr_parsing`, `expression_parsing` and `sympy`. Released as `0.2.0`; see [`units/CHANGELOG.md`](../../units/CHANGELOG.md) for the migration table and known issues.
 

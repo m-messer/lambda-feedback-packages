@@ -1,9 +1,10 @@
-# compareExpressions packages
+# Lambda Feedback packages
 
-Reusable packages extracted from the
+Reusable packages for Lambda Feedback evaluation functions, originally
+extracted from the
 [compareExpressions](https://github.com/lambda-feedback/compareExpressions)
 evaluation function. Each package is independently installable; together they
-share the `compareexpressions` namespace. The app-specific *core evaluation*
+share the `lambdafeedback` namespace. The app-specific *core evaluation*
 logic stays in compareExpressions.
 
 > **0.2.0:** the post-extraction refactor (branch `refactor/package-tidy`)
@@ -15,19 +16,19 @@ logic stays in compareExpressions.
 
 | Directory | Distribution | Import | Responsibility | Depends on |
 |---|---|---|---|---|
-| `slr_parsing` | `compareexpressions-slr-parsing` | `compareexpressions.slr_parsing` | Generic SLR(1) parser engine | — |
-| `criteria` | `compareexpressions-criteria` | `compareexpressions.criteria` | Criteria DSL parser and evaluation graph | `slr_parsing` |
-| `expression_parsing` | `compareexpressions-expression-parsing` | `compareexpressions.expression_parsing` | SymPy parsing, preprocessing and LaTeX preview | `slr_parsing`, `sympy`, `latex2sympy2` |
-| `units` | `compareexpressions-units` | `compareexpressions.units` | Unit-system data, physical-quantity parsing and dimensional analysis | `slr_parsing`, `expression_parsing`, `sympy` |
+| `slr_parsing` | `lambdafeedback-slr-parsing` | `lambdafeedback.slr_parsing` | Generic SLR(1) parser engine | — |
+| `criteria` | `lambdafeedback-criteria` | `lambdafeedback.criteria` | Criteria DSL parser and evaluation graph | `slr_parsing` |
+| `expression_parsing` | `lambdafeedback-expression-parsing` | `lambdafeedback.expression_parsing` | SymPy parsing, preprocessing and LaTeX preview | `slr_parsing`, `sympy`, `latex2sympy2` |
+| `units` | `lambdafeedback-units` | `lambdafeedback.units` | Unit-system data, physical-quantity parsing and dimensional analysis | `slr_parsing`, `expression_parsing`, `sympy` |
 
 ```python
-from compareexpressions.expression_parsing import (
+from lambdafeedback.expression_parsing import (
     ExpressionParams,
     SympyParsingConfig,
     parse_expression,
     preprocess_expression,
 )
-from compareexpressions.units import parse_quantity
+from lambdafeedback.units import parse_quantity
 
 params = ExpressionParams.from_dict(evaluation_params)  # JSON parameters → typed
 pre = preprocess_expression("response", response, params)  # aliases, brackets, |x|
@@ -40,8 +41,8 @@ quantity = parse_quantity("9.81 m/s^2", evaluation_params)  # value, unit, dimen
 from [toolkit-python](https://github.com/lambda-feedback/toolkit-python), with
 `CriteriaGraph.export_feedback` for criteria feedback.
 
-Each package uses a `src/` layout: `units/src/compareexpressions/units/`.
-There is deliberately no `compareexpressions/__init__.py`; the namespace is
+Each package uses a `src/` layout: `units/src/lambdafeedback/units/`.
+There is deliberately no `lambdafeedback/__init__.py`; the namespace is
 [PEP 420](https://peps.python.org/pep-0420/), so the separately installed
 packages merge under one import root.
 

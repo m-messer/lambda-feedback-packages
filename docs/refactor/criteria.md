@@ -1,4 +1,4 @@
-# Phase 2: `compareexpressions.criteria`, and retiring `evaluation_result`: done
+# Phase 2: `lambdafeedback.criteria`, and retiring `evaluation_result`: done
 
 Depends on `slr_parsing`. Released as `0.2.0`; see [`criteria/CHANGELOG.md`](../../criteria/CHANGELOG.md) for the migration tables (including `EvaluationResult` → `lf_toolkit.evaluation.Result`).
 

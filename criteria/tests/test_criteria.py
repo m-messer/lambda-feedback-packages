@@ -9,7 +9,7 @@ import json
 
 import pytest
 
-from compareexpressions.criteria import CriteriaGraph, CriteriaGraphError, build_criteria_parser
+from lambdafeedback.criteria import CriteriaGraph, CriteriaGraphError, build_criteria_parser
 
 RESERVED = {"learner": {"response": None}, "task": {"answer": None}}
 

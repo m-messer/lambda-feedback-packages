@@ -28,7 +28,7 @@ _ERROR = -1
 class SLRParser:
     """An SLR(1) parser generated from token specifications and productions.
 
-    See :mod:`compareexpressions.slr_parsing.grammar` for how grammars are
+    See :mod:`lambdafeedback.slr_parsing.grammar` for how grammars are
     written. ``tag_handler`` computes the tags of nodes built by reduction
     actions; ``error_handler`` entries recover from (or explain) syntax errors.
     """
@@ -388,7 +388,7 @@ class SLRParser:
         """Parse scanned tokens; returns the output roots (normally exactly one).
 
         Raises :class:`ParseError` on a syntax error that no error handler
-        recovers from. Set the ``compareexpressions.slr_parsing.parser``
+        recovers from. Set the ``lambdafeedback.slr_parsing.parser``
         logger to DEBUG to trace shifts and reductions.
         """
         input_tokens = list(input_tokens)

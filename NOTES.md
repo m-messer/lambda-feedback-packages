@@ -32,7 +32,7 @@ pip install -e slr_parsing -e evaluation_result -e criteria \
 ```
 
 *(As extracted. Since the refactor, the packages live under the
-`compareexpressions.*` namespace and install via Poetry; see
+`lambdafeedback.*` namespace and install via Poetry; see
 [Refactor](#refactor-stage-2) below and the README.)*
 
 ---
@@ -98,8 +98,8 @@ All relative imports were repointed to the new package boundaries:
 
 Each package is a PEP 621 project with its own `pyproject.toml` (setuptools
 backend, `requires-python >= 3.8`). Local cross-package dependencies are
-declared by distribution name (`compareexpressions-slr-parsing`,
-`compareexpressions-expression-parsing`). External runtime deps: `sympy`,
+declared by distribution name (`lambdafeedback-slr-parsing`,
+`lambdafeedback-expression-parsing`). External runtime deps: `sympy`,
 `latex2sympy2`, `typing_extensions`.
 
 ---
@@ -146,7 +146,7 @@ decisions are:
   that currently crash or mis-parse (`2E`, `2 litres` → litre·second,
   `(2 m) s`), in-place mutation of caller `params`, and `eval()` of
   author-supplied `symbol_assumptions`.
-- **Namespace + layout:** `compareexpressions.<pkg>` (PEP 420), `src/` layout,
+- **Namespace + layout:** `lambdafeedback.<pkg>` (PEP 420), `src/` layout,
   Poetry, with a root dev environment.
 - **Retire `evaluation_result`** in favour of `lf_toolkit.evaluation.Result`
   from [toolkit-python](https://github.com/lambda-feedback/toolkit-python).

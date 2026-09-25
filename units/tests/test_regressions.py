@@ -2,7 +2,7 @@
 
 import pytest
 
-from compareexpressions.units import QuantityParams, QuantityParseError, parse_quantity
+from lambdafeedback.units import QuantityParams, QuantityParseError, parse_quantity
 
 NATURAL = QuantityParams(strictness="natural")
 

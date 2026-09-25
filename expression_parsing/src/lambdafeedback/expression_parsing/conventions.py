@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from functools import cache
 
-from compareexpressions.slr_parsing import SLRParser, build_expression_parser, compose, group, infix
+from lambdafeedback.slr_parsing import SLRParser, build_expression_parser, compose, group, infix
 
 from .params import Convention, validate_convention
 

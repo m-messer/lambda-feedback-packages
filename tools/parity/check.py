@@ -35,14 +35,14 @@ from corpus import (  # noqa: E402
     QUANTITY_VARIANTS,
 )
 
-from compareexpressions.criteria import build_criteria_parser  # noqa: E402
-from compareexpressions.expression_parsing import (  # noqa: E402
+from lambdafeedback.criteria import build_criteria_parser  # noqa: E402
+from lambdafeedback.expression_parsing import (  # noqa: E402
     ExpressionParams,
     SympyParsingConfig,
     parse_expression,
     sympy_to_latex,
 )
-from compareexpressions.units import QuantityParams, parse_quantity  # noqa: E402
+from lambdafeedback.units import QuantityParams, parse_quantity  # noqa: E402
 
 ERROR = "ERROR"
 

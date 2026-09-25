@@ -7,7 +7,7 @@ from collections.abc import Callable
 from functools import cache
 from typing import Any, NamedTuple
 
-from compareexpressions.slr_parsing import (
+from lambdafeedback.slr_parsing import (
     ExprNode,
     SLRParser,
     TokenProduction,

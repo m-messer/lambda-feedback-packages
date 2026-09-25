@@ -4,15 +4,15 @@ Applies to all packages. No behaviour changes: the parity check shows 3221/3221 
 
 ## Layout
 
-- [x] Move each package to `src/` layout under the namespace: `slr_parsing/slr_parsing/*.py` → `slr_parsing/src/compareexpressions/slr_parsing/*.py`, and likewise for `criteria`, `expression_parsing`, `units` and (until Phase 2) `evaluation_result`.
-- [x] Add `py.typed` to each package. There is no `compareexpressions/__init__.py`, since the PEP 420 namespace depends on its absence.
-- [x] Update imports to `compareexpressions.<pkg>`; all 468 carried-over tests pass.
+- [x] Move each package to `src/` layout under the namespace: `slr_parsing/slr_parsing/*.py` → `slr_parsing/src/lambdafeedback/slr_parsing/*.py`, and likewise for `criteria`, `expression_parsing`, `units` and (until Phase 2) `evaluation_result`.
+- [x] Add `py.typed` to each package. There is no `lambdafeedback/__init__.py`, since the PEP 420 namespace depends on its absence.
+- [x] Update imports to `lambdafeedback.<pkg>`; all 468 carried-over tests pass.
 
 ## Packaging (Poetry)
 
-- [x] Per-package `pyproject.toml`: PEP 621 `[project]`, build backend `poetry-core>=2`, `[tool.poetry] packages = [{ include = "compareexpressions/<pkg>", from = "src" }]`, `requires-python = ">=3.11"`.
+- [x] Per-package `pyproject.toml`: PEP 621 `[project]`, build backend `poetry-core>=2`, `[tool.poetry] packages = [{ include = "lambdafeedback/<pkg>", from = "src" }]`, `requires-python = ">=3.11"`.
 - [x] Sibling deps by name in `[project.dependencies]`, enriched in `[tool.poetry.dependencies]` with `{ path = "../<pkg>", develop = true }`.
-- [x] `poetry build` each package: the wheel `METADATA` has only plain requirements, with no path references. All four wheels installed together in a fresh venv merge under one `compareexpressions` namespace (smoke test: `2 kg m/s^2` → `2 | kilogram metre/second^2`).
+- [x] `poetry build` each package: the wheel `METADATA` has only plain requirements, with no path references. All four wheels installed together in a fresh venv merge under one `lambdafeedback` namespace (smoke test: `2 kg m/s^2` → `2 | kilogram metre/second^2`).
 - [x] Root `pyproject.toml` with `package-mode = false`. The dev group holds all packages as path/develop deps plus `pytest`, `pytest-cov`, `ruff` and `mypy`; `poetry.lock` is committed.
 - [x] `lf_toolkit` pinned to `ae52fa6`, as a **dev-only** dependency (Phase 2 decision; see [upstream-lf-toolkit.md](upstream-lf-toolkit.md)).
 

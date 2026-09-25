@@ -6,7 +6,7 @@ import sys
 
 import pytest
 
-from compareexpressions.criteria import (
+from lambdafeedback.criteria import (
     CriteriaEvaluationError,
     CriteriaGraph,
     CriterionNode,
@@ -78,7 +78,7 @@ class TestGraph:
 
 
 DETERMINISM_SCRIPT = """
-from compareexpressions.criteria import CriteriaGraph
+from lambdafeedback.criteria import CriteriaGraph
 g = CriteriaGraph("g")
 g.add_evaluation_node("START", "s", "d", evaluate=lambda r: {"A": None, "B": None, "C": None})
 for c in "ABC":

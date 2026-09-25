@@ -1,4 +1,4 @@
-# Changelog: compareexpressions-expression-parsing
+# Changelog: lambdafeedback-expression-parsing
 
 ## 0.3.0 (unreleased)
 
@@ -13,7 +13,7 @@ Further tidy-up after the 0.2.0 extraction: previewing a response and mapping fa
 
 ## 0.2.0 (unreleased)
 
-The first release after the extraction refactor. The import path is now `compareexpressions.expression_parsing` (was `expression_parsing`).
+The first release after the extraction refactor. The import path is now `lambdafeedback.expression_parsing` (was `expression_parsing`).
 
 ### Renamed and restructured
 
@@ -21,7 +21,7 @@ Parameters are typed now. Build an `ExpressionParams` with `ExpressionParams.fro
 
 | v0.1 | 0.2.0 |
 |---|---|
-| `expression_parsing` (import) | `compareexpressions.expression_parsing` |
+| `expression_parsing` (import) | `lambdafeedback.expression_parsing` |
 | `default_parameters` (dict) | `ExpressionParams()` defaults |
 | `params` dicts passed to `substitute_input_symbols`, `create_expression_set`, `preprocess_expression` | `ExpressionParams` |
 | `create_sympy_parsing_params(params, unsplittable_symbols, symbol_assumptions)` → dict | `SympyParsingConfig.from_params(params, unsplittable_symbols, symbol_assumptions)`; variants via `.replace(...)` |

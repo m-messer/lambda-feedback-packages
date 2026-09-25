@@ -1,7 +1,7 @@
 import pytest
 from sympy import Symbol, sqrt
 
-from compareexpressions.expression_parsing import (
+from lambdafeedback.expression_parsing import (
     AbsoluteValueNotationError,
     BracketNotationError,
     ExpressionParams,
@@ -22,7 +22,7 @@ from compareexpressions.expression_parsing import (
     sympy_symbols,
     sympy_to_latex,
 )
-from compareexpressions.expression_parsing.substitution import (
+from lambdafeedback.expression_parsing.substitution import (
     elementary_function_substitutions,
     greek_symbol_substitutions,
     unicode_dash_substitutions,

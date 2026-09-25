@@ -658,75 +658,6 @@ files = [
 ]
 
 [[package]]
-name = "compareexpressions-criteria"
-version = "0.2.0"
-description = "Criteria DSL parser and evaluation graph extracted from compareExpressions."
-optional = false
-python-versions = ">=3.11"
-groups = ["dev"]
-files = []
-develop = true
-
-[package.dependencies]
-compareexpressions-slr-parsing = ">=0.2.0,<0.3.0"
-
-[package.source]
-type = "directory"
-url = "criteria"
-
-[[package]]
-name = "compareexpressions-expression-parsing"
-version = "0.2.0"
-description = "SymPy-based expression parsing, preprocessing and LaTeX preview extracted from compareExpressions."
-optional = false
-python-versions = ">=3.11,<3.13"
-groups = ["dev"]
-files = []
-develop = true
-
-[package.dependencies]
-compareexpressions-slr-parsing = ">=0.2.0,<0.3.0"
-latex2sympy2 = "*"
-sympy = ">=1.12,<2.0"
-
-[package.source]
-type = "directory"
-url = "expression_parsing"
-
-[[package]]
-name = "compareexpressions-slr-parsing"
-version = "0.2.0"
-description = "Generic SLR(1) parser engine extracted from compareExpressions."
-optional = false
-python-versions = ">=3.11"
-groups = ["dev"]
-files = []
-develop = true
-
-[package.source]
-type = "directory"
-url = "slr_parsing"
-
-[[package]]
-name = "compareexpressions-units"
-version = "0.2.0"
-description = "Unit system data, physical-quantity parsing and dimensional analysis extracted from compareExpressions."
-optional = false
-python-versions = ">=3.11,<3.13"
-groups = ["dev"]
-files = []
-develop = true
-
-[package.dependencies]
-compareexpressions-expression-parsing = ">=0.2.0,<0.3.0"
-compareexpressions-slr-parsing = ">=0.2.0,<0.3.0"
-sympy = ">=1.12,<2.0"
-
-[package.source]
-type = "directory"
-url = "units"
-
-[[package]]
 name = "coverage"
 version = "7.16.0"
 description = "Code coverage measurement for Python"
@@ -1389,6 +1320,75 @@ doc = ["furo", "jaraco.packaging (>=9.3)", "jaraco.tidelift (>=1.4)", "rst.linke
 enabler = ["pytest-enabler (>=3.4)"]
 test = ["pyfakefs", "pytest (>=6,!=8.1.*)"]
 type = ["pygobject-stubs", "pytest-mypy (>=1.0.1)", "shtab", "types-pywin32"]
+
+[[package]]
+name = "lambdafeedback-criteria"
+version = "0.2.0"
+description = "Criteria DSL parser and evaluation graph extracted from compareExpressions."
+optional = false
+python-versions = ">=3.11"
+groups = ["dev"]
+files = []
+develop = true
+
+[package.dependencies]
+lambdafeedback-slr-parsing = ">=0.2.0,<0.3.0"
+
+[package.source]
+type = "directory"
+url = "criteria"
+
+[[package]]
+name = "lambdafeedback-expression-parsing"
+version = "0.3.0"
+description = "SymPy-based expression parsing and preprocessing extracted from compareExpressions."
+optional = false
+python-versions = ">=3.11,<3.13"
+groups = ["dev"]
+files = []
+develop = true
+
+[package.dependencies]
+lambdafeedback-slr-parsing = ">=0.2.0,<0.3.0"
+latex2sympy2 = "*"
+sympy = ">=1.12,<2.0"
+
+[package.source]
+type = "directory"
+url = "expression_parsing"
+
+[[package]]
+name = "lambdafeedback-slr-parsing"
+version = "0.2.0"
+description = "Generic SLR(1) parser engine extracted from compareExpressions."
+optional = false
+python-versions = ">=3.11"
+groups = ["dev"]
+files = []
+develop = true
+
+[package.source]
+type = "directory"
+url = "slr_parsing"
+
+[[package]]
+name = "lambdafeedback-units"
+version = "0.3.0"
+description = "Unit system data, physical-quantity parsing and dimensional analysis extracted from compareExpressions."
+optional = false
+python-versions = ">=3.11,<3.13"
+groups = ["dev"]
+files = []
+develop = true
+
+[package.dependencies]
+lambdafeedback-expression-parsing = ">=0.3.0,<0.4.0"
+lambdafeedback-slr-parsing = ">=0.2.0,<0.3.0"
+sympy = ">=1.12,<2.0"
+
+[package.source]
+type = "directory"
+url = "units"
 
 [[package]]
 name = "latex2sympy2"
@@ -3075,4 +3075,4 @@ type = ["pytest-mypy (>=1.0.1) ; platform_python_implementation != \"PyPy\""]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.11,<3.13"
-content-hash = "bcaa2feb0b6b31e2f30ca36c9c365dc7aa1061008065f432183f4f5a290c33e8"
+content-hash = "a9486df56f8d60cb758fdbf2b98c890002882330d86954fdab8f40ce99ce1bbe"

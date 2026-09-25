@@ -3,7 +3,7 @@
 import pytest
 from sympy import E, I, Symbol
 
-from compareexpressions.expression_parsing import (
+from lambdafeedback.expression_parsing import (
     PATTERNS,
     ExpressionParams,
     ExpressionParsingError,

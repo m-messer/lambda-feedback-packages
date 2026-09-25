@@ -8,7 +8,7 @@ import re
 
 import pytest
 
-from compareexpressions.slr_parsing import (
+from lambdafeedback.slr_parsing import (
     ErrorHandler,
     GrammarError,
     ParseError,
@@ -199,7 +199,7 @@ class TestErrors:
 
 
 def test_parse_tracing_is_logged(caplog):
-    with caplog.at_level(logging.DEBUG, logger="compareexpressions.slr_parsing.parser"):
+    with caplog.at_level(logging.DEBUG, logger="lambdafeedback.slr_parsing.parser"):
         parse("a+b")
     messages = [record.getMessage() for record in caplog.records]
     assert any(m.startswith("shift to") for m in messages)

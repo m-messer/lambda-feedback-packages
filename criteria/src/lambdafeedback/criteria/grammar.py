@@ -11,7 +11,7 @@ from __future__ import annotations
 from collections.abc import Mapping, Sequence
 from typing import Any
 
-from compareexpressions.slr_parsing import (
+from lambdafeedback.slr_parsing import (
     Action,
     SLRParser,
     TokenSpec,

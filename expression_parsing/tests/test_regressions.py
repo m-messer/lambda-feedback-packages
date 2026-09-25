@@ -6,7 +6,7 @@ import warnings
 
 import pytest
 
-from compareexpressions.expression_parsing import (
+from lambdafeedback.expression_parsing import (
     ExpressionParams,
     LatexParseError,
     SymbolAssumptionError,
@@ -98,7 +98,7 @@ class TestSanitiseLatex:
     def test_unclosed_wrapper_raises_instead_of_hanging(self):
         # Run in a subprocess: the v0.1 code loops forever on this input.
         script = (
-            "from compareexpressions.expression_parsing import LatexParseError, sanitise_latex\n"
+            "from lambdafeedback.expression_parsing import LatexParseError, sanitise_latex\n"
             "try:\n"
             "    sanitise_latex(r'3 \\mathrm{kg')\n"
             "except LatexParseError as e:\n"

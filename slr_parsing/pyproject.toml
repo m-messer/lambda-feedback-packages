@@ -3,11 +3,11 @@ requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [project]
-name = "compareexpressions-slr-parsing"
+name = "lambdafeedback-slr-parsing"
 version = "0.2.0"
 description = "Generic SLR(1) parser engine extracted from compareExpressions."
 requires-python = ">=3.11"
 dependencies = []
 
 [tool.poetry]
-packages = [{ include = "compareexpressions/slr_parsing", from = "src" }]
+packages = [{ include = "lambdafeedback/slr_parsing", from = "src" }]

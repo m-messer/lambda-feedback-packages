@@ -2,7 +2,7 @@ import os
 
 import pytest
 
-from compareexpressions.units import (
+from lambdafeedback.units import (
     COMMON_UNITS,
     IMPERIAL_UNITS,
     SI_BASE_UNITS,

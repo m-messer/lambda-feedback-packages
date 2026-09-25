@@ -7,7 +7,7 @@ these are written fresh to cover the core building blocks.
 
 import pytest
 
-from compareexpressions.slr_parsing import (
+from lambdafeedback.slr_parsing import (
     ExprNode,
     Token,
     build_expression_parser,

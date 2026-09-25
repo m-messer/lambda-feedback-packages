@@ -7,10 +7,10 @@ Each package has a checklist, and commits tick off items as they land:
 | Order | Checklist | Package |
 |---|---|---|
 | 0 | [scaffolding.md](scaffolding.md) | Repo layout, Poetry, ruff, mypy, CI |
-| 1 | [slr_parsing.md](slr_parsing.md) | `compareexpressions.slr_parsing` |
-| 2 | [criteria.md](criteria.md) | `compareexpressions.criteria` (and retiring `evaluation_result`) |
-| 3 | [expression_parsing.md](expression_parsing.md) | `compareexpressions.expression_parsing` |
-| 4 | [units.md](units.md) | `compareexpressions.units` |
+| 1 | [slr_parsing.md](slr_parsing.md) | `lambdafeedback.slr_parsing` |
+| 2 | [criteria.md](criteria.md) | `lambdafeedback.criteria` (and retiring `evaluation_result`) |
+| 3 | [expression_parsing.md](expression_parsing.md) | `lambdafeedback.expression_parsing` |
+| 4 | [units.md](units.md) | `lambdafeedback.units` |
 
 Baseline before the refactor: **468 tests pass** (10 slr_parsing, 7 evaluation_result, 10 criteria, 157 expression_parsing, 284 units). After: **611** (45 slr_parsing, 47 criteria, 204 expression_parsing, 315 units; evaluation_result retired). **All four phases are done.**
 
@@ -22,7 +22,7 @@ Baseline before the refactor: **468 tests pass** (10 slr_parsing, 7 evaluation_r
 | Bugs | Fix each one in its own commit, with a regression test that fails first. Behaviour changes go in the changelog. |
 | Structure | Split large modules; typed data (NamedTuple/dataclass/Enum); a per-package exception hierarchy; a typed params dataclass in place of free-form `params` dicts. |
 | Tooling | Poetry, ruff (lint + format), mypy, GitHub Actions CI. Python floor **3.11**, which lf_toolkit requires. |
-| Import names | PEP 420 namespace: `compareexpressions.slr_parsing`, `.criteria`, `.expression_parsing`, `.units`. Distribution names stay `compareexpressions-<pkg>`. |
+| Import names | PEP 420 namespace: `lambdafeedback.slr_parsing`, `.criteria`, `.expression_parsing`, `.units`. Distribution names stay `lambdafeedback-<pkg>`. |
 | Layout | `src/` layout per package, plus a root non-package Poetry project (`package-mode = false`) that path-installs every package into one dev venv. |
 | evaluation_result | **Retired** (Phase 2). Generic result handling moves to `lf_toolkit.evaluation.Result`; criteria-specific helpers are `CriteriaGraph` methods; `export_feedback` records blank feedback as `""` so tags are kept. |
 | lf_toolkit | **Structural typing for now** (revised in Phase 2). lf_toolkit@ae52fa6 declares its dev tools (boto3, pillow, pydantic, ...) as runtime requirements: 80 packages / 237 MB. So our packages use a `ResultLike` protocol and TypedDicts structurally identical to lf_toolkit's, and lf_toolkit is a **dev-only** dependency (pinned git) for compatibility tests. It becomes a real dependency once [the upstream fixes](upstream-lf-toolkit.md) land. |
